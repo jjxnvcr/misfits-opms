@@ -4,23 +4,26 @@ An order processing/point-of-sale management system for a certain thrift shop
 
 ## How to Use
 
-#### Tools
+> [!IMPORTANT]
+> Tools and dependencies' versions listed below are the ones used whilst developing the system. Lower versions might work but it would be best to follow what the environment use for development.
+
+### Tools
 - Java JDK 21 +
 - Code Editor or IDE (Ideally VSCode)
 - SQL Server 22 +
 - SQL Manager (SSMS or Microsoft Azure)
 
-#### Dependencies
+### Maven Dependencies
 - FlatLaf 3.5.4
 - FlatLaf Inter Font 4.1
 - FlatLaf Extras 3.5.4
 - MigLayout Swing 11.4.2
 - Microsoft SQLServer JDBC 12.10.0
 
-> [!IMPORTANT]
-> Tools and dependencies' versions listed below are the ones used whilst developing the system. Lower versions might work but it would be best to follow what the environment use for development.
+> [!Note]
+> This project uses Maven for managing dependencies. To change versions of the dependencies, go to the pom.xml and replace the <version></version> tags of each dependency
 
-#### Set Up
+### Set Up
 
 Assuming the tools above are already installed in your system, open up your SQL Server Manager (SSMS or Microsoft Azure) and **`create a database named Misfits`**. By default, we use **`SQLEXPRESS`** for the instance name, **`Windows Authentication`** for authentication, **`Optional`** for encryption, and **`Enabled`** trust server certificate.
 
