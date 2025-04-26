@@ -13,6 +13,9 @@ An order processing/point-of-sale management system for a certain thrift shop
 - SQL Server 22 +
 - SQL Manager (SSMS or Microsoft Azure)
 
+> [!NOTE]
+> If you are using Java JDK 24, use other IDEs besides Netbeans as there is still compatibility issues with the Java version and the IDE. If you do not want to use other IDEs, alternatively, downgrade the version of your Java. As for Eclipse IDE, Java 24 is compatible through the installation of Java 24 Support (available in-app)
+
 ### Maven Dependencies
 - FlatLaf 3.5.4
 - FlatLaf Inter Font 4.1
@@ -20,8 +23,10 @@ An order processing/point-of-sale management system for a certain thrift shop
 - MigLayout Swing 11.4.2
 - Microsoft SQLServer JDBC 12.10.0
 
-> [!Note]
-> This project uses Maven for managing dependencies. To change versions of the dependencies, go to the pom.xml and replace the <version></version> tags of each dependency
+> [!NOTE]
+> This project uses Maven for managing dependencies. To change versions of the dependencies, go to the pom.xml and replace the `<version></version>` of each dependency.
+>
+> If you do not have the same Java 21, replace both of the `<maven.compiler>` properties with your Java version
 
 ### Set Up
 
@@ -38,10 +43,10 @@ After creating, we want to set up our newly created database and fill it with ob
 Notice that there is a `DLL` file along with the SQL files in the directory. We use this to establish a connection between the program and the database. Download the file and put it inside the your Java PATH. **DO NOT** rename the file no matter what.
 
 > [!NOTE]
-> To check for your Java PATH, search 'Edit system environment variables' in your windows search and click Environment Variables. Under the System variables, look for the variable 'JAVA_HOME'. If not present, double click on the Path variable under User variables and look for a directory associated with Java
+> To check for your Java PATH, search `Edit system environment variables` in your windows search and click Environment Variables. Under the `System variables`, look for the variable `JAVA_HOME`. If not present, double click on the Path variable under `User variables` and look for a directory associated with Java
 
 After putting the file inside the PATH, navigate to **[Connect.java](src/main/java/app/db/Connect.java)** and put your own credentials.
 
 By default, you don't need to change anything with the credentials with the exception of **`encrypted`** and **`trustCert`** (depending on your server set up). If you have different values, replace the default ones with yours.
 
-Once all of that is finished, we now have set up the database and the connection between it and the program.
+Once all of that is finished, we now have set up the database and the connection between it and the program and are now ready to use the system.

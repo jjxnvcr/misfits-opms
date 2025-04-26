@@ -7,6 +7,7 @@ import java.awt.Insets;
 import javax.swing.SpinnerModel;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
+import com.formdev.flatlaf.extras.components.FlatCheckBox;
 import com.formdev.flatlaf.extras.components.FlatComboBox;
 import com.formdev.flatlaf.extras.components.FlatLabel;
 import com.formdev.flatlaf.extras.components.FlatSpinner;
@@ -26,7 +27,7 @@ public class Form extends Page {
 
         setArc(10);
         setBackground(Palette.CRUST);
-        lightenBackground(5);
+        lightenBackground(6);
 
         header = new FlatLabel();
         header.setFont(header.getFont().deriveFont(Font.BOLD, 30));
@@ -94,6 +95,21 @@ public class Form extends Page {
         return field;
     }
 
+    public FlatCheckBox createCheckBox(String text) {
+        FlatCheckBox button = new FlatCheckBox();
+        button.setText(text);
+        button.setForeground(Palette.OVERLAY1.color());
+        button.setIconTextGap(5);
+
+        ClientProperty.setProperty(button, "icon.background", Palette.BASE.varString());
+        ClientProperty.setProperty(button, "icon.checkmarkColor", Palette.CRUST.varString());
+        ClientProperty.setProperty(button, "icon.borderWidth", "1");
+        ClientProperty.setProperty(button, "icon.borderColor", Palette.SUBTEXT0.varString());
+        ClientProperty.setProperty(button, "icon.selectedBackground", Palette.BLUE.varString());
+
+        return button;
+    }
+    
     public FlatButton createConfirmButton(String text, Runnable action) {
         FlatButton button = new FlatButton();
         button.setText(text);
@@ -121,6 +137,14 @@ public class Form extends Page {
         return button;
     }
 
+    public FlatButton createCancelButton(String text, Runnable action) {
+        FlatButton button = createConfirmButton(text, action);
+        button.setBackground(Palette.SURFACE0.color());
+        button.setForeground(Palette.SUBTEXT0.color());
+
+        return button;
+    }
+    
     public void setFeedback(String message) {
         feedback.setText(message);
         feedback.revalidate();

@@ -6,6 +6,8 @@ import com.formdev.flatlaf.extras.components.FlatLabel;
 
 import app.components.LabelWrap;
 import app.components.Page;
+import app.components.StatsCard;
+import app.db.dao.production.CategoryDao;
 import app.db.pojo.production.Category;
 import app.software.category.listing.CategoryList;
 import app.utils.Iconify;
@@ -18,7 +20,7 @@ public class CategoryView extends Page {
 
         setArc(10);
         setBackground(Palette.CRUST);
-        lightenBackground(5);
+        lightenBackground(6);
 
         Page categoryInfo = new Page(new MigLayout("fillx"), false);
 
@@ -36,7 +38,17 @@ public class CategoryView extends Page {
         categoryInfo.add(name, "growx, wrap");
         categoryInfo.add(id, "wrap");
 
+        StatsCard stats = new StatsCard(3);
+        
+        try {
+            stats.addCard("Category Value", String.format("₱ %,.2f", CategoryDao.getCategoryItemTotalPrice(category.getCategoryId())), Palette.PEACH.color());
+
+            stats.addCard("Item Count", String.format("%,d", CategoryDao.getCategoryItemsCount(category.getCategoryId())), Palette.MAUVE.color());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         add(categoryInfo, "growx");
-        add(new CategoryStats(category), "grow");
+        add(stats, "growx");
     }
 }

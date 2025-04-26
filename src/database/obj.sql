@@ -1,3 +1,50 @@
+CREATE VIEW VW_DailyRevenue
+AS
+    SELECT SUM(ti.Quantity * si.ItemPrice) AS TotalRevenue
+    FROM Sales.TransactionItem ti
+    INNER JOIN Sales.SaleItem si
+    ON ti.SaleItemID = si.SaleItemID
+    INNER JOIN Sales.SalesTransaction st
+    ON ti.TransactionID = st.TransactionID
+    WHERE DATEPART(DAY, st.TransactionDate) = DATEPART(DAY, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+
+GO
+
+CREATE VIEW VW_WeeklyRevenue
+AS 
+    SELECT SUM(ti.Quantity * si.ItemPrice) AS TotalRevenue
+    FROM Sales.TransactionItem ti
+    INNER JOIN Sales.SaleItem si
+    ON ti.SaleItemID = si.SaleItemID
+    INNER JOIN Sales.SalesTransaction st
+    ON ti.TransactionID = st.TransactionID
+    WHERE DATEPART(WEEK, st.TransactionDate) = DATEPART(WEEK, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+
+GO
+
+CREATE VIEW VW_MonthlyRevenue
+AS
+    SELECT SUM(ti.Quantity * si.ItemPrice) AS TotalRevenue
+    FROM Sales.TransactionItem ti
+    INNER JOIN Sales.SaleItem si
+    ON ti.SaleItemID = si.SaleItemID
+    INNER JOIN Sales.SalesTransaction st
+    ON ti.TransactionID = st.TransactionID
+    WHERE DATEPART(MONTH, st.TransactionDate) = DATEPART(MONTH, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+
+GO
+
+CREATE VIEW VW_TopSellingItems
+AS
+    SELECT si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize, SUM(ti.Quantity) AS TotalQuantity
+    FROM Sales.SaleItem si
+    INNER JOIN Sales.TransactionItem ti
+    ON si.SaleItemID = ti.SaleItemID
+    WHERE ti.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+    GROUP BY si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize
+
+GO
+
 CREATE VIEW VW_SalesTransactionTotal
 AS
     SELECT ti.TransactionID, SUM(ti.Quantity * si.ItemPrice) AS TotalAmount
@@ -5,6 +52,26 @@ AS
     JOIN Sales.SaleItem si
     ON si.SaleItemID = ti.SaleItemID
     GROUP BY ti.TransactionID
+
+GO  
+
+CREATE VIEW VW_SaleTrend
+AS
+    SELECT CAST(st.TransactionDate AS DATE) AS TransactionDate, SUM(stt.TotalAmount) AS TotalRevenue
+    FROM Sales.SalesTransaction st
+    INNER JOIN VW_SalesTransactionTotal stt
+    ON st.TransactionID = stt.TransactionID
+    GROUP BY st.TransactionDate
+GO
+
+CREATE VIEW VW_AverageTransactionSpending
+AS
+    SELECT SUM(ti.Quantity * si.ItemPrice) / COUNT(DISTINCT st.TransactionID) AS AverageSpending
+    FROM Sales.TransactionItem ti
+    JOIN Sales.SaleItem si
+    ON ti.SaleItemID = si.SaleItemID
+    JOIN Sales.SalesTransaction st
+    ON ti.TransactionID = st.TransactionID
 
 GO
 
@@ -41,6 +108,18 @@ AS
     FROM Production.Item i
     JOIN Production.Category c
     ON i.CategoryID = c.CategoryID
+
+GO
+
+CREATE VIEW VW_ItemAvailableStock
+AS
+    SELECT i.ItemID, s.TotalStock - SUM(si.ItemQuantity) AS AvailableStock
+    FROM Production.Item i
+    INNER JOIN Production.Stock s
+    ON i.ItemID = s.ItemID
+    INNER JOIN Sales.SaleItem si
+    ON i.ItemID = si.ItemID
+    GROUP BY i.ItemID, s.TotalStock
 
 GO
 
@@ -120,3 +199,196 @@ AS
     WHERE SupplierID = @SupplierID AND OrderStatus = @OrderStatus
 
 GO
+
+CREATE TRIGGER Sales.TR_OnTransactionCreate
+ON Sales.TransactionItem
+AFTER INSERT
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            UPDATE si
+            SET si.ItemQuantity = si.ItemQuantity - i.Quantity
+            FROM Sales.SaleItem si
+                INNER JOIN inserted i
+                ON si.SaleItemID = i.SaleItemID
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END
+
+GO
+
+CREATE TRIGGER Sales.TR_OnTransactionCancel
+ON Sales.SalesTransaction
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            UPDATE si
+            SET si.ItemQuantity = si.ItemQuantity + ti.Quantity
+            FROM Sales.SaleItem si
+                INNER JOIN Sales.TransactionItem ti
+                ON si.SaleItemID = ti.SaleItemID
+                INNER JOIN deleted d
+                ON ti.TransactionID = d.TransactionID
+
+            UPDATE dlv
+            SET dlv.DeliveryStatus = 'Cancelled'
+            FROM Sales.Delivery dlv
+                INNER JOIN deleted d
+                ON dlv.TransactionID = d.TransactionID
+
+            DELETE ti
+            FROM Sales.TransactionItem ti
+                INNER JOIN deleted d 
+                ON ti.TransactionID = d.TransactionID;
+
+           DELETE st
+            FROM Sales.SalesTransaction st
+                INNER JOIN deleted d 
+                ON st.TransactionID = d.TransactionID;
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END
+
+GO
+
+CREATE TRIGGER Sales.TR_OnDeliveryFailure
+ON Sales.Delivery
+AFTER UPDATE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            IF EXISTS (
+                SELECT 1
+                FROM inserted i
+                INNER JOIN deleted d
+                ON i.DeliveryID = d.DeliveryID
+                WHERE d.DeliveryStatus = 'Pending' AND i.DeliveryStatus = 'Failed'
+            )
+            BEGIN
+                UPDATE si
+                SET si.ItemQuantity = si.ItemQuantity + ti.Quantity
+                FROM Sales.SaleItem si
+                    INNER JOIN Sales.TransactionItem ti
+                    ON si.SaleItemID = ti.SaleItemID
+                    INNER JOIN inserted i
+                    ON ti.TransactionID = i.TransactionID
+            END
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END
+
+GO
+
+CREATE TRIGGER Sales.TR_OnOrderForDelivery
+ON Sales.Delivery
+AFTER UPDATE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            IF EXISTS (
+                SELECT 1
+                FROM inserted i
+                INNER JOIN deleted d
+                ON d.DeliveryID = i.DeliveryID
+                WHERE d.DeliveryStatus = 'Shipped' AND i.DeliveryStatus = 'Out for Delivery'
+            )
+            BEGIN
+                UPDATE d
+                SET d.DeliveryDate = getDate()
+                FROM Sales.Delivery d
+                INNER JOIN inserted i
+                ON d.DeliveryID = i.DeliveryID
+            END
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END
+
+GO
+
+CREATE TRIGGER Production.TR_OnOrderArrival
+ON Production.SupplyOrder
+AFTER UPDATE
+AS
+IF (UPDATE (OrderStatus))
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            IF EXISTS (
+                SELECT 1
+                FROM inserted i
+                INNER JOIN deleted d
+                ON i.OrderID = d.OrderID
+                WHERE d.OrderStatus = 'Pending' AND i.OrderStatus = 'Delivered'
+            )
+            BEGIN
+                UPDATE s
+                SET s.TotalStock = s.TotalStock + soi.Quantity
+                FROM Production.Stock s
+                    INNER JOIN Production.SupplyOrderItem soi
+                    ON s.ItemID = soi.ItemID
+            END
+        COMMIT TRANSACTION
+    END TRY 
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END
+
+GO
+
+CREATE TRIGGER Production.TR_OnSupplierDelete
+ON Production.Supplier
+INSTEAD OF DELETE
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+            UPDATE so
+            SET so.OrderStatus = 'Cancelled'
+            FROM Production.SupplyOrder so
+            WHERE so.SupplierID IN (SELECT SupplierID FROM deleted)
+            AND so.OrderStatus = 'Pending'
+
+            DELETE FROM Production.Supplier
+            WHERE SupplierID IN (SELECT SupplierID FROM deleted)
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION
+        DECLARE @ErrorMsg nvarchar(400)
+        SET @ErrorMsg = ERROR_MESSAGE()
+        RAISERROR (@ErrorMsg, 16, 1)
+    END CATCH
+END

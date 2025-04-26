@@ -12,6 +12,7 @@ import app.software.suppliers.form.SupplierDeleteConfirmation;
 import app.software.suppliers.form.SupplierEditForm;
 import app.software.suppliers.view.SupplierView;
 import app.utils.ClientProperty;
+import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
 
@@ -31,6 +32,8 @@ public class SupplierEntry extends ListEntry {
         FlatLabel name = new FlatLabel();
         name.setForeground(Palette.TEXT.color());
         name.setText(supplier.getSupplierName());
+        name.setIcon(new Iconify("address-book", Palette.PINK.color()).derive(name.getFont().getSize() + 4, name.getFont().getSize() + 4));
+        name.setIconTextGap(5);
         
         setAction(() -> {
             if (owner.getActiveSupplierEntry() == this) {

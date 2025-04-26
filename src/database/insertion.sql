@@ -1,3 +1,18 @@
+-- =============================================
+-- Create Schemas (Run if not already created)
+-- =============================================
+-- CREATE SCHEMA Sales;
+-- GO
+-- CREATE SCHEMA Production;
+-- GO
+-- CREATE SCHEMA Customer;
+-- GO
+
+-- =============================================
+-- Create Tables (Run if not already created)
+-- =============================================
+-- Execute the CREATE TABLE statements provided in the prompt first.
+
 
 -- =============================================
 -- INSERT Data into Production.Category (Approx 15 Records)
@@ -126,6 +141,21 @@ INSERT INTO Production.Item (CategoryID, ItemName, ItemDescription, ItemColor) V
 GO
 
 -- =============================================
+-- INSERT Data into Production.Stock (Approx 40 Records - Initial Stock Levels)
+-- =============================================
+INSERT INTO Production.Stock (ItemID, TotalStock) VALUES
+(1, 10), (2, 20), (3, 15), (4, 8), (5, 5),
+(6, 12), (7, 18), (8, 7), (9, 3), (10, 9),
+(11, 6), (12, 11), (13, 14), (14, 10), (15, 25),
+(16, 4), (17, 16), (18, 5), (19, 12), (20, 8),
+(21, 3), (22, 7), (23, 9), (24, 6), (25, 2),
+(26, 4), (27, 3), (28, 5), (29, 6), (30, 4),
+(31, 8), (32, 7), (33, 5), (34, 9), (35, 11),
+(36, 3), (37, 4), (38, 6), (39, 10), (40, 20),
+(41, 15);
+GO
+
+-- =============================================
 -- INSERT Data into Production.SupplyOrder (Approx 35 Records)
 -- =============================================
 PRINT 'Inserting Supply Orders...';
@@ -206,24 +236,24 @@ INSERT INTO Sales.SaleItem (ItemID, ItemPrice, ItemQuantity, MeasurementSystem, 
 -- T-Shirts (ItemID 1, 2, 3, 4)
 (1, 150.00, 2, 'Alpha', NULL, 'M'), -- SaleItemID 1 (Sold 1)
 (1, 150.00, 1, 'Alpha', NULL, 'L'), -- SaleItemID 2 (Unsold)
-(2, 100.00, 3, 'Alpha', NULL, 'L'), -- SaleItemID 3 (Sold 2+2=4 -> Needs Qty >= 4) -> Let's make Qty 5
+(2, 100.00, 5, 'Alpha', NULL, 'L'), -- SaleItemID 3 (Sold 2+1+1+1=5)
 (2, 100.00, 2, 'Alpha', NULL, 'M'), -- SaleItemID 4 (Unsold)
-(3, 160.00, 3, 'Alpha', NULL, 'S'), -- SaleItemID 5 (Sold 2+1=3)
+(3, 160.00, 3, 'Alpha', NULL, 'S'), -- SaleItemID 5 (Sold 1+1+1=3)
 (4, 140.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 6 (Unsold)
 -- Blouses (ItemID 5, 6, 7, 8)
 (5, 300.00, 1, 'Alpha', NULL, 'S'), -- SaleItemID 7 (Sold 1)
 (5, 300.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 8 (Sold 1)
 (6, 220.00, 2, 'Alpha', NULL, 'L'), -- SaleItemID 9 (Sold 1)
-(7, 200.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 10 (Unsold)
+(7, 200.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 10 (Sold 1)
 (8, 250.00, 1, 'Alpha', NULL, 'S'), -- SaleItemID 11 (Unsold)
 -- Dresses (ItemID 9, 10, 11, 12)
 (9, 350.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 12 (Sold 1)
 (10, 280.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 13 (Sold 1)
-(11, 400.00, 1, 'Alpha', NULL, 'S'), -- SaleItemID 14 (Sold 1+1=2) -> Needs Qty >= 2 -> Let's make Qty 2
+(11, 400.00, 2, 'Alpha', NULL, 'S'), -- SaleItemID 14 (Sold 1+1=2)
 (12, 320.00, 1, 'Alpha', NULL, 'L'), -- SaleItemID 15 (Unsold)
 -- Pants/Jeans (ItemID 13, 14, 15, 16, 17, 18)
 (13, 200.00, 1, 'US', 30, NULL), -- SaleItemID 16 (Sold 1)
-(14, 280.00, 2, 'Alpha', NULL, 'L'), -- SaleItemID 17 (Sold 1)
+(14, 280.00, 2, 'Alpha', NULL, 'L'), -- SaleItemID 17 (Sold 1 + 1 = 2)
 (15, 250.00, 1, 'Alpha', NULL, 'M'), -- SaleItemID 18 (Sold 1)
 (16, 380.00, 1, 'US', 34, NULL), -- SaleItemID 19 (Sold 1)
 (17, 350.00, 2, 'US', 31, NULL), -- SaleItemID 20 (Sold 1)
@@ -253,18 +283,20 @@ INSERT INTO Sales.SaleItem (ItemID, ItemPrice, ItemQuantity, MeasurementSystem, 
 (35, 120.00, 2, 'Alpha', NULL, 'L'), -- SaleItemID 38 (Sold 1)
 -- Shoes (ItemID 36, 37)
 (36, 450.00, 1, 'US', 8, NULL), -- SaleItemID 39 (Sold 1)
-(37, 550.00, 1, 'EU', 39, NULL), -- SaleItemID 40 (Sold 1+1=2) -> Needs Qty >= 2 -> Let's make Qty 2
+(37, 550.00, 2, 'EU', 39, NULL), -- SaleItemID 40 (Sold 1+1=2)
 -- Bags (ItemID 38, 39)
 (38, 200.00, 1, NULL, NULL, NULL), -- SaleItemID 41 (Sold 1)
-(39, 350.00, 2, NULL, NULL, NULL), -- SaleItemID 42 (Sold 1+1=2) -> Needs Qty >= 2 -> Let's make Qty 3
+(39, 350.00, 3, NULL, NULL, NULL), -- SaleItemID 42 (Sold 1+1+1=3)
 -- Accessories (ItemID 40, 41)
-(40, 80.00, 4, NULL, NULL, NULL), -- SaleItemID 43 (Sold 2+2+1=5) -> Needs Qty >= 5 -> Let's make Qty 5
+(40, 80.00, 5, NULL, NULL, NULL), -- SaleItemID 43 (Sold 2+1+1+1=5)
 (41, 120.00, 2, NULL, NULL, NULL), -- SaleItemID 44 (Sold 1+1=2)
 -- Add a few more completely unsold items
 (1, 155.00, 1, 'Alpha', NULL, 'S'), -- SaleItemID 45 (Unsold T-Shirt)
 (13, 210.00, 1, 'US', 31, NULL), -- SaleItemID 46 (Unsold Chinos)
 (25, 510.00, 1, 'Alpha', NULL, 'L'), -- SaleItemID 47 (Unsold Jacket)
-(36, 460.00, 1, 'US', 9, NULL) -- SaleItemID 48 (Unsold Sneakers)
+(36, 460.00, 1, 'US', 9, NULL), -- SaleItemID 48 (Unsold Sneakers)
+-- (38, 190.00, 1, NULL, NULL, NULL), -- SaleItemID 49 (Duplicate Tote Bag - REMOVED based on previous correction)
+(7, 210.00, 1, 'Alpha', NULL, 'L'); -- SaleItemID 49 (New - Unsold Peasant Blouse Large)
 GO
 -- Note: SaleItemIDs are assumed sequential starting from 1. Adjust if needed based on actual execution.
 
@@ -377,9 +409,9 @@ INSERT INTO Sales.TransactionItem (TransactionID, SaleItemID, Quantity) VALUES
 -- TID 7 (Paolo)
 (7, 14, 1), -- Buys LBD (Qty 1/2 used)
 -- TID 8 (Paolo)
-(8, 37, 1), (8, 44, 1), -- Buys Polo, Scarf
+(8, 37, 1), (8, 44, 1), -- Buys Polo, Scarf (Qty 1/2 used)
 -- TID 9 (Sofia)
-(9, 17, 1),
+(9, 17, 1), -- Buys Wide Leg Trousers (Qty 1/2 used)
 -- TID 10 (Miguel)
 (10, 31, 1),
 -- TID 11 (Isabella)
@@ -413,7 +445,7 @@ INSERT INTO Sales.TransactionItem (TransactionID, SaleItemID, Quantity) VALUES
 -- TID 25 (Pilar)
 (25, 41, 1),
 -- TID 26 (Pilar)
-(26, 10, 1), -- Buys Peasant Blouse (Unsold before)
+(26, 10, 1), -- Buys Peasant Blouse (Sold 1/1)
 -- TID 27 (Felipe)
 (27, 38, 1),
 -- TID 28 (Elena)
@@ -423,7 +455,7 @@ INSERT INTO Sales.TransactionItem (TransactionID, SaleItemID, Quantity) VALUES
 -- TID 30 (Catalina)
 (30, 25, 1),
 -- TID 31 (Eduardo)
-(31, 17, 1), -- Buys Wide Leg Trousers (Sold before)
+(31, 17, 1), -- Buys Wide Leg Trousers (Qty 2/2 used)
 -- TID 32 (Eduardo)
 (32, 42, 1), -- Buys Bag (Qty 2/3 used)
 -- TID 33 (Victoria)
@@ -454,6 +486,7 @@ GO
 -- =============================================
 -- INSERT Data into Sales.Delivery (Approx 45 Records)
 -- Linked to SalesTransaction (1-43). Address copied from Customer.
+-- UPDATED: Includes 'Cancelled' as a possible status.
 -- =============================================
 PRINT 'Inserting Deliveries...';
 -- Generate delivery records, copying address from customer, setting status
@@ -463,15 +496,17 @@ SELECT
     st.TransactionID,
     CONCAT(c.Street, ', ', c.Barangay, ', ', c.City, ', ', c.Province),
     DATEADD(day, (RAND(CHECKSUM(NEWID())) * 3) + 1, st.TransactionDate), -- Delivery 1-4 days after transaction
-    CASE ABS(CHECKSUM(NEWID())) % 5 -- Random status
+    CASE ABS(CHECKSUM(NEWID())) % 6 -- Random status (0-5 for 6 statuses) -- MODIFIED from % 5
         WHEN 0 THEN 'Delivered'
         WHEN 1 THEN 'Shipped'
         WHEN 2 THEN 'Out for Delivery'
         WHEN 3 THEN 'Pending'
-        ELSE 'Failed'
+        WHEN 4 THEN 'Failed'
+        ELSE 'Cancelled' -- Added Cancelled status
     END,
     CASE -- Add paid amount roughly for 'Cash' transactions simulating COD
-        WHEN st.PaymentType = 'Cash' AND ABS(CHECKSUM(NEWID())) % 5 != 4 THEN -- Assume most cash are COD, unless 'Failed'
+        -- Assume 'Cancelled' or 'Failed' deliveries wouldn't have PaidAmount recorded yet
+        WHEN st.PaymentType = 'Cash' AND (ABS(CHECKSUM(NEWID())) % 6) NOT IN (4, 5) THEN
             (SELECT SUM(si.ItemPrice * ti.Quantity) FROM Sales.TransactionItem ti JOIN Sales.SaleItem si ON ti.SaleItemID = si.SaleItemID WHERE ti.TransactionID = st.TransactionID)
         ELSE NULL
     END
@@ -481,27 +516,3 @@ WHERE st.TransactionID <= 43; -- Ensure we only create deliveries for inserted t
 GO
 
 PRINT 'Finished inserting data.';
-
-/*
-Explanation and How Requirements Were Met:
-
-1.  Record Counts: Generated approximately 35+ for main tables and 70+ for junction tables (adjusting slightly for variation). `SaleItem` has more (~50) to allow for unsold stock. `SalesTransaction` has more (~45) to accommodate multiple purchases. `TransactionItem` count is linked to transactions.
-2.  Philippines Data: Used common Filipino names and 11-digit phone numbers starting with '09'.
-3.  Bulacan Addresses: All `Customer.Customer` records have addresses strictly within Bulacan province, with values provided for `Street`, `Barangay`, `City`, and `Province`.
-4.  Multiple Transactions: Customers with IDs 1, 5, 10, 15, 20, 25, 30 were given 2 or 3 transactions each in the `Sales.SalesTransaction` inserts.
-5.  Varying Quantities: In `Sales.TransactionItem`, several records have `Quantity` set to 2 (e.g., TransactionID 2 buying 2x SaleItemID 3, TransactionID 1 buying 2x SaleItemID 43).
-6.  Unsold SaleItems: Several `SaleItem` records (e.g., SaleItemID 2, 4, 6, 10, 11, 12, 15, 21, 24, 27, 45, 46, 47, 48, 49) do not appear in the `Sales.TransactionItem` table, representing unsold stock.
-7.  SaleItems Sold Multiple Times:
-    * `SaleItemID = 3` (White T-Shirt L, Qty 5): Sold in TID 4 (Qty 2), TID 17 (Qty 1), TID 29 (Qty 1), TID 38 (Qty 1) = Total 5 sold.
-    * `SaleItemID = 5` (Graphic Tee S, Qty 3): Sold in TID 11 (Qty 1), TID 23 (Qty 1), TID 33 (Qty 1) = Total 3 sold.
-    * `SaleItemID = 14` (LBD S, Qty 2): Sold in TID 7 (Qty 1), TID 18 (Qty 1) = Total 2 sold.
-    * `SaleItemID = 40` (Boots EU 39, Qty 2): Sold in TID 13 (Qty 1), TID 28 (Qty 1) = Total 2 sold.
-    * `SaleItemID = 42` (Leather Bag, Qty 3): Sold in TID 14 (Qty 1), TID 32 (Qty 1), TID 41 (Qty 1) = Total 3 sold.
-    * `SaleItemID = 43` (Woven Belt, Qty 5): Sold in TID 2 (Qty 2), TID 20 (Qty 1), TID 37 (Qty 1), TID 42 (Qty 1) = Total 5 sold.
-    * `SaleItemID = 44` (Silk Scarf, Qty 2): Sold in TID 8 (Qty 1), TID 35 (Qty 1) = Total 2 sold.
-    * (This required manually adjusting the `ItemQuantity` in `Sales.SaleItem` to be sufficient).
-8.  Uneven Distribution: Links between tables (Supplier-Order, Order-Item, Customer-Transaction, Transaction-Item) were varied and not strictly 1:1. Some suppliers have multiple orders, some orders have multiple items, etc.
-9.  Deliveries: Generated delivery records linked to transactions, copying the customer address and assigning random statuses and approximate COD amounts for cash transactions.
-
-This script provides a more complex and varied dataset reflecting the nuances you requested. Remember to execute the `CREATE SCHEMA` and `CREATE TABLE` statements before running these `INSERT` statements.
-*/

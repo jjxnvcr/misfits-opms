@@ -11,6 +11,7 @@ import app.software.customers.form.CustomerDeleteConfirmation;
 import app.software.customers.form.CustomerEditForm;
 import app.software.customers.view.CustomerView;
 import app.utils.ClientProperty;
+import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
 
@@ -30,7 +31,9 @@ public class CustomerEntry extends ListEntry {
         FlatLabel name = new FlatLabel();
         name.setForeground(Palette.TEXT.color());
         name.setText(customer.getFirstName() + " " + customer.getLastName());
-
+        name.setIcon(new Iconify("user-circle", Palette.MAUVE.color()).derive(name.getFont().getSize() + 4, name.getFont().getSize() + 4));
+        name.setIconTextGap(5);
+        
         setAction(() -> {
             if (owner.getActiveCustomerEntry() == this) {
                 return;

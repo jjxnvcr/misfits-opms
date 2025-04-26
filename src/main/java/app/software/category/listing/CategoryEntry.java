@@ -11,6 +11,7 @@ import app.software.category.form.CategoryDeleteConfirmation;
 import app.software.category.form.CategoryEditForm;
 import app.software.category.view.CategoryView;
 import app.utils.ClientProperty;
+import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
 
@@ -30,6 +31,8 @@ public class CategoryEntry extends ListEntry {
         FlatLabel name = new FlatLabel();
         name.setForeground(Palette.TEXT.color());
         name.setText(category.getCategoryName());
+        name.setIcon(new Iconify("category", Palette.GREEN.color()).derive(name.getFont().getSize() + 4, name.getFont().getSize() + 4));
+        name.setIconTextGap(5);
         
         setAction(() -> {
             if (owner.getActiveCategoryEntry() == this) {

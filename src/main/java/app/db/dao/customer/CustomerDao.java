@@ -102,6 +102,31 @@ public class CustomerDao {
         return null;
     }
 
+    public static Customer getCustomerByName(String firstName, String lastName) throws SQLException {
+        Connection conn = Connect.openConnection();
+    
+        String sql = "SELECT * FROM Customer.Customer WHERE FirstName = ? AND LastName = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, firstName);
+        stmt.setString(2, lastName);
+
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            return new Customer(
+                res.getInt("CustomerID"),
+                res.getString("FirstName"),
+                res.getString("LastName"),
+                res.getString("ContactNumber"),
+                res.getString("Street"),
+                res.getString("Barangay"),
+                res.getString("City"),
+                res.getString("Province")
+            );
+        }
+
+        return null;
+    }
+
     public static List<Customer> getAllCustomers() {
         try (Connection conn = Connect.openConnection()) {
             String sql = "SELECT * FROM Customer.Customer";

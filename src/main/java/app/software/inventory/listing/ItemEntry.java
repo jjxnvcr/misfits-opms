@@ -12,6 +12,7 @@ import app.software.inventory.form.ItemDeleteForm;
 import app.software.inventory.form.ItemEditForm;
 import app.software.inventory.view.ItemView;
 import app.utils.ClientProperty;
+import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
 
@@ -31,7 +32,9 @@ public class ItemEntry extends ListEntry {
         FlatLabel name = new FlatLabel();
         name.setForeground(Palette.TEXT.color());
         name.setText(item.getItemName());
-
+        name.setIcon(new Iconify("hanger", Palette.BLUE.color()).derive(name.getFont().getSize() + 4, name.getFont().getSize() + 4));
+        name.setIconTextGap(5);
+        
         setAction(() -> {
             if (owner.getActiveItemEntry() == this) {
                 return;

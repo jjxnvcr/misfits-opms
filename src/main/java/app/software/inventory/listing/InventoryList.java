@@ -32,7 +32,7 @@ import net.miginfocom.swing.MigLayout;
 public class InventoryList extends Page {
     private Map<Column, Sort> sortMap = new LinkedHashMap<>();
     private String sortCategory;
-    private ScrollView scrollView = new ScrollView(2);
+    private ScrollView scrollView = new ScrollView(3);
     private SearchPanel searchPanel;
     private ActionPanel actionPanel;
     private InventoryPage owner;
@@ -229,7 +229,7 @@ public class InventoryList extends Page {
 
                 items = stringifySortMap().isBlank() ? ItemDao.getAllItemsByCategory(categoryId) : ItemDao.getAllItemsByCategoryOrderBy(categoryId, stringifySortMap());
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             PopupDialog error = new PopupDialog("Unable to load Items");
             error.setDialogType(DialogType.ERROR);
             error.setMessage("Unable to load items\n" + e.getMessage());

@@ -18,6 +18,7 @@ import app.components.Page;
 import app.components.PopupDialog;
 import app.db.dao.production.CategoryDao;
 import app.db.dao.production.ItemDao;
+import app.db.dao.production.StockDao;
 import app.db.dao.sales.SaleItemDao;
 import app.db.pojo.column.CategoryColumn;
 import app.db.pojo.production.Category;
@@ -204,8 +205,19 @@ public class ItemEditForm extends Form {
 
                     stockLabel = createFieldLabel("Stock");
 
-                    stockField = createSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+                    stockField = createSpinner(new SpinnerNumberModel(1, 0, 100, 1));
                     stockField.setValue(saleItem.getItemQuantity());
+                    stockField.addChangeListener(c -> {
+                        try {
+                            if (Integer.parseInt(stockField.getValue().toString()) > StockDao.getItemAvailableStock(item.getItemId())) {
+                                setFeedback("Stock exceeds the available stock!");
+                                stockField.setValue(stockField.getPreviousValue());
+                                return;
+                            }
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
+                    });
 
                     activeSaleItem = saleItem;
 

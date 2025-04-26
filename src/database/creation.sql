@@ -41,12 +41,18 @@ CREATE TABLE Production.Item
     ItemColor varchar(50)
 )
 
+CREATE TABLE Production.Stock (
+	StockID int IDENTITY(1,1) PRIMARY KEY,
+	ItemID int FOREIGN KEY REFERENCES Production.Item(ItemID) ON DELETE CASCADE,
+	TotalStock int NOT NULL CHECK (TotalStock >= 0)
+)
+
 CREATE TABLE Production.SupplyOrder
 (
     OrderID int IDENTITY(1,1) PRIMARY KEY,
     SupplierID int FOREIGN KEY REFERENCES Production.Supplier(SupplierID) ON DELETE SET NULL,
     OrderDate datetime DEFAULT getDate(),
-    OrderStatus varchar(50) NOT NULL CHECK (OrderStatus IN ('Pending', 'Delivered'))
+    OrderStatus varchar(50) NOT NULL CHECK (OrderStatus IN ('Cancelled', 'Pending', 'Delivered'))
 )
 
 CREATE TABLE Production.SupplyOrderItem
@@ -94,9 +100,9 @@ CREATE TABLE Sales.TransactionItem
 CREATE TABLE Sales.Delivery
 ( 
     DeliveryID int IDENTITY(1,1) PRIMARY KEY,
-    TransactionID int FOREIGN KEY REFERENCES Sales.SalesTransaction(TransactionID),
+    TransactionID int FOREIGN KEY REFERENCES Sales.SalesTransaction(TransactionID) ON DELETE SET NULL,
     DeliveryAddress nvarchar(MAX) NOT NULL,
     DeliveryDate datetime DEFAULT getDate(),
-    DeliveryStatus varchar(50) NOT NULL CHECK (DeliveryStatus IN ('Pending', 'Shipped', 'Out for Delivery', 'Delivered', 'Failed')),
+    DeliveryStatus varchar(50) NOT NULL CHECK (DeliveryStatus IN ('Cancelled', 'Pending', 'Shipped', 'Out for Delivery', 'Delivered', 'Failed')),
     PaidAmount numeric(10,2) NULL
 )

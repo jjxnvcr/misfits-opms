@@ -40,14 +40,14 @@ public class OrderList extends Page {
         SortButton dateSort = new SortButton(SupplyOrderColumn.OrderDate, "Date");
         dateSort.setIcon(new Iconify("desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
         dateSort.setAction(() -> {
-            dateSort.setIcon(new Iconify(getSort() ? "asc" : "desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
+            dateSort.setIcon(new Iconify(!getSort() ? "asc" : "desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
             setSort(!getSort());
             loadOrders();
         });
 
         FlatLabel ordersLabel = new FlatLabel();
         ordersLabel.setText("Orders");
-        ordersLabel.setForeground(Palette.TEXT.color());
+        ordersLabel.setForeground(Palette.SUBTEXT0.color());
 
         orderCountLabel = new FlatLabel();
         orderCountLabel.setForeground(Palette.TEXT.color());

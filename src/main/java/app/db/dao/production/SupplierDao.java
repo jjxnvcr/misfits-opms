@@ -56,6 +56,20 @@ public class SupplierDao {
         return null;
     }
 
+    public static Supplier getSupplierByName(String name) throws SQLException {
+        Connection conn = Connect.openConnection();
+
+        String sql = "SELECT * FROM Production.Supplier WHERE SupplierName = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, name);
+
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            return new Supplier(res.getInt("SupplierID"), res.getString("SupplierName"), res.getString("ContactNumber"));
+        }
+        return null;
+    }
+
     public static Supplier getLatestSupplier() throws SQLException {
         Connection conn = Connect.openConnection();
 

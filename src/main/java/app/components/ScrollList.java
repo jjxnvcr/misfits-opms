@@ -1,14 +1,17 @@
 package app.components;
 
+import java.awt.Component;
 import java.awt.Cursor;
 
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import com.formdev.flatlaf.extras.components.FlatScrollPane;
 
 public class ScrollList extends FlatScrollPane {
     public ScrollList(ScrollView view) {
         super();
+
         setOpaque(false);
         setBorder(null);
         setViewportBorder(null);
@@ -25,11 +28,11 @@ public class ScrollList extends FlatScrollPane {
         setViewportView(view);
     }
 
-    public ScrollList() {
+    public ScrollList(Component view) {
         super();
 
         setOpaque(false);
-        setBorder(null);
+        setBorder(new EmptyBorder(0, 0, 0, 0));
         setViewportBorder(null);
         getViewport().setOpaque(false);
 
@@ -40,5 +43,7 @@ public class ScrollList extends FlatScrollPane {
         getHorizontalScrollBar().setUnitIncrement(13);
         getHorizontalScrollBar().setBackground(UIManager.getColor("transparent"));
         getHorizontalScrollBar().setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        setViewportView(view);
     }
 }

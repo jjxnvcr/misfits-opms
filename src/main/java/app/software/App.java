@@ -26,6 +26,8 @@ public class App extends JFrame {
 
         add(nav, "height 100%");
 
+        nav.getDefaulButton().doClick();
+        
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -40,5 +42,9 @@ public class App extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    public Nav getNav() {
+        return nav;
     }
 }

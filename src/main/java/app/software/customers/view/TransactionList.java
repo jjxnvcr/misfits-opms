@@ -38,14 +38,14 @@ public class TransactionList extends Page {
         SortButton dateSort = new SortButton(SalesTransactionColumn.TransactionDate, "Date");
         dateSort.setIcon(new Iconify("desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
         dateSort.setAction(() -> {
-            dateSort.setIcon(new Iconify(getSort() ? "asc" : "desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
+            dateSort.setIcon(new Iconify(!getSort() ? "asc" : "desc", dateSort.getForeground()).derive(dateSort.getFont().getSize(), dateSort.getFont().getSize()));
             setSort(!getSort());
             loadTransactions();
         });
 
         FlatLabel transactionLabel = new FlatLabel();
         transactionLabel.setText("Transactions");
-        transactionLabel.setForeground(Palette.TEXT.color());
+        transactionLabel.setForeground(Palette.SUBTEXT0.color());
 
         add(transactionLabel);
         add(dateSort, "align 100%, pushx, wrap");

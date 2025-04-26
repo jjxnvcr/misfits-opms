@@ -39,6 +39,8 @@ public class OrderEntry extends ListEntry {
         status.setText(supplyOrder.getOrderStatus());
         status.setForeground(Palette.SUBTEXT0.color());
 
+        setAction(() -> {return;});
+
         add(id);
         add(amount, "align 100%, pushx, wrap");
         add(status);

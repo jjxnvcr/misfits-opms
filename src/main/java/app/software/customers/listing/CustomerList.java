@@ -26,7 +26,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class CustomerList extends Page {
     private Map<Column, Sort> sortMap = new LinkedHashMap<>();
-    private ScrollView scrollView = new ScrollView(2);
+    private ScrollView scrollView = new ScrollView(3);
     private SearchPanel searchPanel;
     private ActionPanel actionPanel;
     private CustomersPage owner;

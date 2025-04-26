@@ -83,46 +83,45 @@ public class ItemAddForm extends Form {
         add(createConfirmButton("Add", () -> {
             if (!validateFields(itemNameField, itemDescField, itemColorField) || !validateComboBox(categoryField)) {
                 return;
-            } else {
-                PopupDialog confirm = new PopupDialog("Add Item");
-                confirm.setDialogType(DialogType.CONFIRMATION);
-                confirm.setMessage("Are you sure you want to add this item?");
-                confirm.setCloseButtonAction(() -> confirm.dispose());
-                confirm.setConfirmButtonAction(() -> {
-                    try {
-                        Item item = new Item(
-                            CategoryDao.getCategoryByName(categoryField.getSelectedItem().toString()).getCategoryId(),
-                            itemNameField.getText().trim(), 
-                            itemDescField.getText().trim(), 
-                            itemColorField.getText().trim()
-                        );
+        }
+            PopupDialog confirm = new PopupDialog("Add Item");
+            confirm.setDialogType(DialogType.CONFIRMATION);
+            confirm.setMessage("Are you sure you want to add this item?");
+            confirm.setCloseButtonAction(() -> confirm.dispose());
+            confirm.setConfirmButtonAction(() -> {
+                try {
+                    Item item = new Item(
+                        CategoryDao.getCategoryByName(categoryField.getSelectedItem().toString()).getCategoryId(),
+                        itemNameField.getText().trim(), 
+                        itemDescField.getText().trim(), 
+                        itemColorField.getText().trim()
+                    );
 
-                        ItemDao.addItem(item);
+                    ItemDao.addItem(item);
 
-                        confirm.dispose();
+                    confirm.dispose();
 
-                        PopupDialog notif = new PopupDialog("Item Added");
-                        notif.setDialogType(DialogType.NOTIFICATION);
-                        notif.setMessage("Item has been successfully added!");
-                        notif.setCloseButtonAction(() -> notif.dispose());
-                        notif.display();
+                    PopupDialog notif = new PopupDialog("Item Added");
+                    notif.setDialogType(DialogType.NOTIFICATION);
+                    notif.setMessage("Item has been successfully added!");
+                    notif.setCloseButtonAction(() -> notif.dispose());
+                    notif.display();
 
-                        Item addedItem = ItemDao.getLatestItem();
-                        ItemEntry itemEntry = new ItemEntry(owner, addedItem);
+                    Item addedItem = ItemDao.getLatestItem();
+                    ItemEntry itemEntry = new ItemEntry(owner, addedItem);
 
-                        owner.setActiveItemEntry(itemEntry);
-                        owner.loadInventory();
-                    } catch (SQLException e) {
-                        PopupDialog error = new PopupDialog("Unable to Add Item");
-                        error.setDialogType(DialogType.ERROR);
-                        error.setMessage("Something unexpected happened. Unable to add item.\n\n Error: " + e.getMessage());
-                        error.setCloseButtonAction(() -> error.dispose());
-                        error.display();
-                        e.printStackTrace();
-                    }
-                });
-                confirm.display();
-            }
+                    owner.setActiveItemEntry(itemEntry);
+                    owner.loadInventory();
+                } catch (SQLException e) {
+                    PopupDialog error = new PopupDialog("Unable to Add Item");
+                    error.setDialogType(DialogType.ERROR);
+                    error.setMessage("Something unexpected happened. Unable to add item.\n\n Error: " + e.getMessage());
+                    error.setCloseButtonAction(() -> error.dispose());
+                    error.display();
+                    e.printStackTrace();
+                }
+            });
+            confirm.display();
         }), "grow, gapbottom 5%, gapright 5%");
     }
 }

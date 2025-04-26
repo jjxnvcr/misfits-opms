@@ -43,8 +43,7 @@ public class PopupDialog extends JDialog {
         super();
         setTitle(title);
         setBackground(UIManager.getColor("mantle"));
-        setPreferredSize(new Dimension(450, 230));
-        setResizable(false);
+        setPreferredSize(new Dimension(450, 250));
         setModalityType(ModalityType.APPLICATION_MODAL);
     }
 
@@ -61,7 +60,7 @@ public class PopupDialog extends JDialog {
         if (type == DialogType.CONFIRMATION) {
             setLayout(
                 new MigLayout(
-                    "insets 15, fill",
+                    "insets 15, fill, align center",
                      "[50%]5%[50%]",
                       "5%[pref!]5%[pref!]5%"
                 )
@@ -69,7 +68,7 @@ public class PopupDialog extends JDialog {
         } else if (type == DialogType.NOTIFICATION || type == DialogType.ERROR) {
             setLayout(
                 new MigLayout(
-                    "insets 15, fill",
+                    "insets 15, fill, align center",
                     "[]",
                     "5%[pref!]5%"
                 )
@@ -86,7 +85,7 @@ public class PopupDialog extends JDialog {
             this.message.setForeground(UIManager.getColor("red"));
         }
 
-        add(this.message, "align 50%, grow, span, wrap, gapbottom 10");
+        add(this.message, "grow, span, wrap, gapbottom 10");
     }
 
     public void setCloseButtonAction(Runnable action) {
@@ -97,7 +96,7 @@ public class PopupDialog extends JDialog {
             setVisible(false);
         });
 
-        add(closeButton, "align 50%, grow");
+        add(closeButton, "grow");
     }
 
     public void setConfirmButtonAction(Runnable action) {
@@ -107,7 +106,7 @@ public class PopupDialog extends JDialog {
             confirm = true;
         });
 
-        add(confirmButton, "align 50%, grow, wrap");
+        add(confirmButton, "grow, wrap");
     }
 
     public boolean isConfirmed() {

@@ -3,17 +3,17 @@ package app.db.pojo.sales;
 public class TransactionItem {
     private int transactionItemId;
     private int transactionId;
-    private int itemId;
+    private int saleItemId;
     private int quantity;
 
-    public TransactionItem(int transactionId, int itemId, int quantity) {
+    public TransactionItem(int transactionId, int saleItemId, int quantity) {
         this.transactionId = transactionId;
-        this.itemId = itemId;
+        this.saleItemId = saleItemId;
         this.quantity = quantity;
     }
 
-    public TransactionItem(int transactionItemId, int transactionId, int itemId, int quantity) {
-        this(transactionId, itemId, quantity);
+    public TransactionItem(int transactionItemId, int transactionId, int saleItemId, int quantity) {
+        this(transactionId, saleItemId, quantity);
         this.transactionItemId = transactionItemId;
     }
     
@@ -33,12 +33,12 @@ public class TransactionItem {
         this.transactionId = transactionId;
     }
 
-    public int getItemId() {
-        return itemId;
+    public int getSaleItemId() {
+        return saleItemId;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setSaleItemId(int saleItemId) {
+        this.saleItemId = saleItemId;
     }
 
     public int getQuantity() {
@@ -54,7 +54,7 @@ public class TransactionItem {
         return "TransactionItem{" +
                 "transactionItemId=" + transactionItemId +
                 ", transactionId=" + transactionId +
-                ", itemId=" + itemId +
+                ", saleItemId=" + saleItemId +
                 ", quantity=" + quantity +
                 '}';
     }

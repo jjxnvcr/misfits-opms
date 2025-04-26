@@ -12,9 +12,14 @@ import javax.swing.JPanel;
 import com.formdev.flatlaf.extras.components.FlatButton;
 
 import app.components.NavButton;
+import app.software.cashier.CashierPage;
 import app.software.category.CategoryPage;
 import app.software.customers.CustomersPage;
+import app.software.deliveries.DeliveryPage;
+import app.software.glance.GlancePage;
 import app.software.inventory.InventoryPage;
+import app.software.orders.OrdersPage;
+import app.software.sales.SalesPage;
 import app.software.suppliers.SupplierPage;
 import app.utils.ClientProperty;
 import app.utils.Iconify;
@@ -34,9 +39,9 @@ public class Nav extends JPanel {
     private NavButton deliveriesButton;
     private NavButton ordersButton;
     private NavButton suppliersButton;
-
-    private NavButton defaultButton;
+    private NavButton cashierButton;
     private NavButton activeButton;
+    private NavButton defaultButton;
 
     private App owner;
 
@@ -63,34 +68,40 @@ public class Nav extends JPanel {
         addButtons();
 
         defaultButton = glanceButton;
-        setActiveButton(defaultButton);
     }
 
     private void initButtons() {
-        glanceButton = new NavButton(this, "", Palette.PEACH, "asterisk", "Glance");
+        glanceButton = new NavButton(this, GlancePage.class.getName(), Palette.PEACH, "asterisk", "Glance");
 
         customersButton = new NavButton(this, CustomersPage.class.getName(), Palette.MAUVE, "users", "Customers");
 
         categoryButton = new NavButton(this, CategoryPage.class.getName(), Palette.GREEN, "category", "Category");
 
         inventoryButton = new NavButton(this, InventoryPage.class.getName(), Palette.BLUE, "basket", "Inventory");
-        salesButton = new NavButton(this, "", Palette.MAROON, "coins", "Sales");
 
-        deliveriesButton = new NavButton(this, "", Palette.YELLOW, "truck", "Deliveries");
+        salesButton = new NavButton(this, SalesPage.class.getName(), Palette.MAROON, "coins", "Sales");
 
-        ordersButton = new NavButton(this, "", Palette.TEAL, "package", "Orders");
+        deliveriesButton = new NavButton(this, DeliveryPage.class.getName(), Palette.YELLOW, "truck", "Deliveries");
+
+        ordersButton = new NavButton(this, OrdersPage.class.getName(), Palette.TEAL, "package", "Orders");
 
         suppliersButton = new NavButton(this, SupplierPage.class.getName(), Palette.PINK, "address-book", "Suppliers");
+
+        cashierButton = new NavButton(this, CashierPage.class.getName(), Palette.LAVENDER, "cash-register", "Cashier");
     }
 
     private void addButtons() {
-        List<NavButton> buttons = List.of(glanceButton, customersButton, categoryButton, inventoryButton, salesButton, deliveriesButton, ordersButton, suppliersButton);
+        List<NavButton> buttons = List.of(glanceButton, customersButton, categoryButton, inventoryButton, salesButton, deliveriesButton, ordersButton, suppliersButton, cashierButton);
 
         for (NavButton button : buttons) {
             add(button);
         }
 
         add(toggleSidebarButton(), "align 0% 100%, pushy");
+    }
+
+    public NavButton getDefaulButton() {
+        return defaultButton;
     }
 
     private FlatButton toggleSidebarButton() {
@@ -131,7 +142,7 @@ public class Nav extends JPanel {
                     button.setToolTipText("Collapse sidebar");
                 }
 
-                for (NavButton button : List.of(glanceButton, customersButton, categoryButton, inventoryButton, salesButton, deliveriesButton, ordersButton, suppliersButton)) {
+                for (NavButton button : List.of(glanceButton, customersButton, categoryButton, inventoryButton, salesButton, deliveriesButton, ordersButton, suppliersButton, cashierButton)) {
                     button.toggle(state);
                 }
 
@@ -158,5 +169,9 @@ public class Nav extends JPanel {
 
     public App getOwner() {
         return owner;
+    }
+
+    public NavButton getCashierButton() {
+        return cashierButton;
     }
 }

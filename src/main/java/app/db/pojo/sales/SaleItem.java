@@ -10,10 +10,10 @@ public class SaleItem {
     private double itemPrice;
     private int itemQuantity;
     private String measurementSystem;
-    private int numericSize;
+    private double numericSize;
     private String alphaSize;
 
-    public SaleItem(int itemId, double itemPrice, int itemQuantity, String measurementSystem, int numericSize, String alphaSize) {
+    public SaleItem(int itemId, double itemPrice, int itemQuantity, String measurementSystem, double numericSize, String alphaSize) {
         this.itemId = itemId;
         this.itemPrice = itemPrice;
         this.itemQuantity = itemQuantity;
@@ -22,20 +22,20 @@ public class SaleItem {
         this.alphaSize = alphaSize;
     }
 
-    public SaleItem(int itemId, String categoryName, String itemName, String itemDesc, String itemColor, double itemPrice, int itemQuantity, String measurementSystem, int numericSize, String alphaSize) {
-        this.itemId = itemId;
+    public SaleItem(int saleItemId, int itemId, double itemPrice, int itemQuantity, String measurementSystem, double numericSize, String alphaSize) {
+        this(itemId, itemPrice, itemQuantity, measurementSystem, numericSize, alphaSize);
+        this.saleItemId = saleItemId;
+    }
+
+    public SaleItem(int itemId, String categoryName, String itemName, String itemDesc, String itemColor, double itemPrice, int itemQuantity, String measurementSystem, double numericSize, String alphaSize) {
+        this(itemId, itemPrice, itemQuantity, measurementSystem, numericSize, alphaSize);
         this.categoryName = categoryName;
         this.itemName = itemName;
         this.itemDesc = itemDesc;
         this.itemColor = itemColor;
-        this.itemPrice = itemPrice;
-        this.itemQuantity = itemQuantity;
-        this.measurementSystem = measurementSystem;
-        this.numericSize = numericSize;
-        this.alphaSize = alphaSize;
     }
 
-    public SaleItem(int saleItemId, int itemId, String categoryName, String itemName, String itemDesc, String itemColor, double itemPrice, int itemQuantity, String measurementSystem, int numericSize, String alphaSize) {
+    public SaleItem(int saleItemId, int itemId, String categoryName, String itemName, String itemDesc, String itemColor, double itemPrice, int itemQuantity, String measurementSystem, double numericSize, String alphaSize) {
         this(itemId, categoryName, itemName, itemDesc, itemColor, itemPrice, itemQuantity, measurementSystem, numericSize, alphaSize);
         this.saleItemId = saleItemId;
     }
@@ -112,7 +112,7 @@ public class SaleItem {
         this.measurementSystem = measurementSystem;
     }
 
-    public int getNumericSize() {
+    public double getNumericSize() {
         return numericSize;
     }
 

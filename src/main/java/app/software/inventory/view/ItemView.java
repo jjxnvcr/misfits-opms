@@ -3,6 +3,7 @@ package app.software.inventory.view;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
@@ -11,7 +12,10 @@ import com.formdev.flatlaf.extras.components.FlatLabel;
 import app.components.LabelWrap;
 import app.components.Page;
 import app.components.PopupDialog;
+import app.components.StatsCard;
 import app.db.dao.production.CategoryDao;
+import app.db.dao.production.ItemDao;
+import app.db.dao.production.StockDao;
 import app.db.dao.sales.SaleItemDao;
 import app.db.pojo.production.Item;
 import app.db.pojo.sales.SaleItem;
@@ -25,7 +29,7 @@ import net.miginfocom.swing.MigLayout;
 
 public class ItemView extends Page {
     private List<SaleItem> saleItems;
-    private ItemStats stats;
+    private StatsCard stats;
     private FlatButton activeSizeButton;
 
     public ItemView(InventoryList owner, Item item) {
@@ -33,7 +37,7 @@ public class ItemView extends Page {
 
         setArc(10);
         setBackground(Palette.CRUST);
-        lightenBackground(5);
+        lightenBackground(6);
 
         Page itemView = new Page(new MigLayout("fillx", "[90%][10%]"), false);
 
@@ -92,8 +96,9 @@ public class ItemView extends Page {
         itemInfo.add(stock, "wrap");
 
         itemView.add(itemInfo, "grow");
-                
-        stats = new ItemStats(item);
+            
+        stats = new StatsCard(2);
+        reloadStats(item);
 
         try {
             saleItems = SaleItemDao.getAllSaleItemsByItemId(item.getItemId());
@@ -111,7 +116,6 @@ public class ItemView extends Page {
             addSize.setCursor(new Cursor(Cursor.HAND_CURSOR));
             addSize.setText("Add");
             addSize.addActionListener(e -> {
-                owner.resetActiveItemEntry();
                 owner.getActionPanel().setActiveButton(owner.getActionPanel().getAddButton());
                 owner.getOwner().loadActionView(new SaleItemAddForm(owner, item));
             });
@@ -139,7 +143,11 @@ public class ItemView extends Page {
                     stock.setIcon(new Iconify("package", Palette.SURFACE2.color()).derive(stock.getFont().getSize() + 4, stock.getFont().getSize() + 4));
                 } else {
                     if (!saleItem.getMeasurementSystem().equals("Alpha")) {
-                        size.setText(saleItem.getMeasurementSystem() + " " + saleItem.getNumericSize());
+                        DecimalFormat sizeFormat = new DecimalFormat();
+                        sizeFormat.setMaximumFractionDigits(1);
+                        sizeFormat.setMinimumFractionDigits(0);
+
+                        size.setText(saleItem.getMeasurementSystem() + " " + sizeFormat.format(saleItem.getNumericSize()));
                     } else {
                         size.setText(saleItem.getAlphaSize());
                     }
@@ -159,7 +167,7 @@ public class ItemView extends Page {
                             stock.setText("");
                             stock.setIcon(null);
 
-                            stats.swapPojo(item);
+                            reloadStats(item);
                             return;
                         } 
 
@@ -175,7 +183,7 @@ public class ItemView extends Page {
                         stock.setText(String.format("%,d left", saleItem.getItemQuantity()));
                         stock.setIcon(new Iconify("package", Palette.SURFACE2.color()).derive(stock.getFont().getSize() + 4, stock.getFont().getSize() + 4));
 
-                        stats.swapPojo(saleItem);
+                        reloadStats(saleItem);
                     });
                 }
 
@@ -194,7 +202,34 @@ public class ItemView extends Page {
         }
 
         add(itemView, "grow");
-        
         add(stats, "grow");
+    }
+
+    private void reloadStats(Object item) {
+        stats.removeCards();
+
+        if (item instanceof SaleItem) {
+            try {
+                stats.addCard("Total Sales", String.format("%,d", SaleItemDao.getTotalTransactions(((SaleItem) item).getSaleItemId())), Palette.PEACH.color());
+    
+                stats.addCard("Total Purchases", String.format("%,d", SaleItemDao.getTotalPurchases(((SaleItem) item).getSaleItemId())), Palette.MAUVE.color());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                stats.addCard("Total Stock", String.format("%,d", StockDao.getItemTotalStock(((Item) item).getItemId())), Palette.PEACH.color());
+
+                stats.addCard("Remaining Stock", String.format("%,d", StockDao.getItemAvailableStock(((Item) item).getItemId())), Palette.MAUVE.color());
+
+                stats.addCard("Total Sales", String.format("%,d", ItemDao.getTotalTransactions(((Item) item).getItemId())), Palette.GREEN.color());
+    
+                stats.addCard("Total Purchases", String.format("%,d", ItemDao.getTotalPurchases(((Item) item).getItemId())), Palette.BLUE.color());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
+        }
+
+        stats.reloadCards();
     }
 }

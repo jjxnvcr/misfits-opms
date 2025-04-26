@@ -5,6 +5,8 @@ import java.awt.Font;
 import com.formdev.flatlaf.extras.components.FlatLabel;
 
 import app.components.Page;
+import app.components.StatsCard;
+import app.db.dao.production.SupplierDao;
 import app.db.pojo.production.Supplier;
 import app.software.suppliers.listing.SupplierList;
 import app.utils.Iconify;
@@ -17,10 +19,12 @@ public class SupplierView extends Page {
 
         setArc(10);
         setBackground(Palette.CRUST);
-        lightenBackground(5);
+        lightenBackground(6);
 
-        Page supplierInfo = new Page(new MigLayout("fillx"), false);
-
+        Page supplierInfo = new Page(new MigLayout("insets 0, align 0%, fillx"), false);
+        Page iconContainer = new Page(new MigLayout("insets 0, align 0%"), false);
+        Page supplierDetails = new Page(new MigLayout("fillx, wrap"), false);
+        
         FlatLabel icon = new FlatLabel();
         icon.setIcon(new Iconify("address-book", Palette.PINK.color()).derive(60, 60));
 
@@ -40,14 +44,30 @@ public class SupplierView extends Page {
         contact.setIcon(new Iconify("phone", Palette.SURFACE2.color()).derive(contact.getFont().getSize() + 4, contact.getFont().getSize() + 4));
         contact.setIconTextGap(5);
 
-        supplierInfo.add(icon, "wrap");
-        supplierInfo.add(name, "growx, gapbottom 5, wrap");
-        supplierInfo.add(id, "wrap, gapbottom 15");
-        supplierInfo.add(contact, "wrap");
+        iconContainer.add(icon);
+        supplierDetails.add(name, "span, gapbottom 5");
+        supplierDetails.add(id, "span, gapbottom 15");
+        supplierDetails.add(contact, "span");
+
+        supplierInfo.add(iconContainer, "height 100%");
+        supplierInfo.add(supplierDetails, "width 100%, grow");
+
+        StatsCard statsCard = new StatsCard(2);
+
+        try {
+            statsCard.addCard("Delivered Supplies", String.format("%,d", SupplierDao.getSupplierSupplyOrderCount(supplier.getSupplierId(), "Delivered")), Palette.PEACH.color());
+
+            statsCard.addCard("Delivered Items", String.format("%,d", SupplierDao.getSupplierSupplyItemCount(supplier.getSupplierId(), "Delivered")), Palette.MAUVE.color());
+
+            statsCard.addCard("Pending Supplies", String.format("%,d", SupplierDao.getSupplierSupplyOrderCount(supplier.getSupplierId(), "Pending")), Palette.GREEN.color());
+
+            statsCard.addCard("Pending Items", String.format("%,d", SupplierDao.getSupplierSupplyItemCount(supplier.getSupplierId(), "Pending")), Palette.BLUE.color());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         add(supplierInfo, "growx");
-        
-        add(new SupplierStats(supplier), "height 85%, grow");
+        add(statsCard, "height 85%, grow");
         add(new OrderList(supplier), "height 100%, grow");
     }
 }

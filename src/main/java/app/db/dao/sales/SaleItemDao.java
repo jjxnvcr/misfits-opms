@@ -22,7 +22,7 @@ public class SaleItemDao {
         stmt.setDouble(2, saleItem.getItemPrice());
         stmt.setInt(3, saleItem.getItemQuantity());
         stmt.setString(4, saleItem.getMeasurementSystem());
-        stmt.setInt(5, saleItem.getNumericSize());
+        stmt.setDouble(5, saleItem.getNumericSize());
         stmt.setString(6, saleItem.getAlphaSize());
         stmt.executeUpdate();
     }
@@ -35,7 +35,7 @@ public class SaleItemDao {
         stmt.setDouble(1, saleItem.getItemPrice());
         stmt.setInt(2, saleItem.getItemQuantity());
         stmt.setString(3, saleItem.getMeasurementSystem());
-        stmt.setInt(4, saleItem.getNumericSize());
+        stmt.setDouble(4, saleItem.getNumericSize());
         stmt.setString(5, saleItem.getAlphaSize());
         stmt.setInt(6, saleItem.getSaleItemId());
         stmt.executeUpdate();
@@ -48,6 +48,27 @@ public class SaleItemDao {
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(1, id);
         stmt.executeUpdate();
+    }
+
+    public static SaleItem getSaleItem(int id) throws SQLException {
+        Connection conn = Connect.openConnection();
+
+        String sql = "SELECT * FROM Sales.SaleItem WHERE SaleItemID = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            return new SaleItem(
+                res.getInt("SaleItemID"),
+                res.getInt("ItemID"),
+                res.getDouble("ItemPrice"),
+                res.getInt("ItemQuantity"),
+                res.getString("MeasurementSystem"),
+                res.getDouble("NumericSize"),
+                res.getString("AlphaSize")
+            );
+        }
+        return null;
     }
 
     public static List<SaleItem> getAllSaleItemsByItemId(int id) throws SQLException {
@@ -69,7 +90,7 @@ public class SaleItemDao {
                 res.getDouble("ItemPrice"),
                 res.getInt("ItemQuantity"),
                 res.getString("MeasurementSystem"),
-                res.getInt("NumericSize"),
+                res.getDouble("NumericSize"),
                 res.getString("AlphaSize")
             ));
         }
@@ -95,13 +116,92 @@ public class SaleItemDao {
                 res.getDouble("ItemPrice"),
                 res.getInt("ItemQuantity"),
                 res.getString("MeasurementSystem"),
-                res.getInt("NumericSize"),
+                res.getDouble("NumericSize"),
                 res.getString("AlphaSize")
             ));
         }
         return saleItems;
     }
 
+    public static List<SaleItem> getAllSaleItemsOrderBy(String orderBy) throws SQLException {
+        Connection conn = Connect.openConnection();
+
+        String sql = "SELECT * FROM VW_SaleItemInfo ORDER BY " + orderBy;
+        List<SaleItem> saleItems = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            saleItems.add(new SaleItem(
+                res.getInt("SaleItemID"),
+                res.getInt("ItemID"),
+                res.getString("CategoryName"),
+                res.getString("ItemName"),
+                res.getString("ItemDescription"),
+                res.getString("ItemColor"),
+                res.getDouble("ItemPrice"),
+                res.getInt("ItemQuantity"),
+                res.getString("MeasurementSystem"),
+                res.getDouble("NumericSize"),
+                res.getString("AlphaSize")
+            ));
+        }
+        return saleItems;
+    }
+    
+    public static List<SaleItem> getSaleItemsByCategory(String category) throws SQLException {
+        Connection conn = Connect.openConnection();
+
+        String sql = "SELECT * FROM VW_SaleItemInfo WHERE CategoryName = ?";
+        List<SaleItem> saleItems = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, category);
+
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            saleItems.add(new SaleItem(
+                res.getInt("SaleItemID"),
+                res.getInt("ItemID"),
+                res.getString("CategoryName"),
+                res.getString("ItemName"),
+                res.getString("ItemDescription"),
+                res.getString("ItemColor"),
+                res.getDouble("ItemPrice"),
+                res.getInt("ItemQuantity"),
+                res.getString("MeasurementSystem"),
+                res.getDouble("NumericSize"),
+                res.getString("AlphaSize")
+            ));
+        }
+        return saleItems;
+    }
+    
+    public static List<SaleItem> getSaleItemsByCategoryOrderBy(String category, String orderBy) throws SQLException {
+        Connection conn = Connect.openConnection();
+
+        String sql = "SELECT * FROM VW_SaleItemInfo WHERE CategoryName = ? ORDER BY " + orderBy;
+        List<SaleItem> saleItems = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, category);
+
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            saleItems.add(new SaleItem(
+                res.getInt("SaleItemID"),
+                res.getInt("ItemID"),
+                res.getString("CategoryName"),
+                res.getString("ItemName"),
+                res.getString("ItemDescription"),
+                res.getString("ItemColor"),
+                res.getDouble("ItemPrice"),
+                res.getInt("ItemQuantity"),
+                res.getString("MeasurementSystem"),
+                res.getDouble("NumericSize"),
+                res.getString("AlphaSize")
+            ));
+        }
+        return saleItems;
+    }
+    
     public static int getTotalTransactions(int id) throws SQLException {
         Connection conn = Connect.openConnection();
         PreparedStatement stmt = conn.prepareStatement("SELECT TotalTransactions FROM VW_SaleItemPurchased WHERE SaleItemID = ?");

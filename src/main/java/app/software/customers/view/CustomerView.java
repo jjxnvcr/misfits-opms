@@ -6,7 +6,8 @@ import com.formdev.flatlaf.extras.components.FlatLabel;
 
 import app.components.LabelWrap;
 import app.components.Page;
-
+import app.components.StatsCard;
+import app.db.dao.customer.CustomerDao;
 import app.db.pojo.customer.Customer;
 import app.utils.Iconify;
 import app.utils.Palette;
@@ -21,7 +22,7 @@ public class CustomerView extends Page {
 
         setArc(10);
         setBackground(Palette.CRUST);
-        lightenBackground(5);
+        lightenBackground(6);
 
         Page customerInfo = new Page(new MigLayout("fillx"), false);
         Page customerIcon = new Page(new MigLayout("align 0%"), false);
@@ -41,7 +42,7 @@ public class CustomerView extends Page {
         contact.setText(customer.getContactNumber());
         contact.setForeground(Palette.SUBTEXT1.color());
         contact.setIcon(new Iconify("phone", Palette.SURFACE2.color()).derive(contact.getFont().getSize() + 4, contact.getFont().getSize() + 4));
-        contact.setIconTextGap(8);
+        contact.setIconTextGap(5);
 
         LabelWrap address = new LabelWrap((customer.getStreet() == null ? "" : customer.getStreet()) + ", " + (customer.getBarangay() == null ? "" : customer.getBarangay()) + ", " + (customer.getCity() == null ? "" : customer.getCity()) + ", " + (customer.getProvince() == null ? "" : customer.getProvince()), getFont());
         address.setForeground(Palette.SUBTEXT1.color());
@@ -68,10 +69,28 @@ public class CustomerView extends Page {
         customerInfo.add(customerIcon, "height 100%");
         customerInfo.add(customerDetails, "height 100%, grow");
 
+        StatsCard stats = new StatsCard(2);
+
+        try {
+            stats.addCard("Total Spending", String.format("₱ %,.2f", CustomerDao.getCustomerTotalSpending(customer.getCustomerId())), Palette.PEACH.color());
+
+            stats.addCard("Refund Total", String.format("₱ %,.2f", CustomerDao.getCustomerTotalSpending(customer.getCustomerId(), "Failed")), Palette.MAUVE.color());
+
+            stats.addCard("Complete Orders", String.format("%,d", CustomerDao.getCustomerDeliveryCount(customer.getCustomerId(), "Delivered")), Palette.GREEN.color());
+
+            stats.addCard("Shipped Orders", String.format("%,d", CustomerDao.getCustomerDeliveryCount(customer.getCustomerId(), "Shipped")), Palette.BLUE.color());
+
+            stats.addCard("Out for Delivery Orders", String.format("%,d", CustomerDao.getCustomerDeliveryCount(customer.getCustomerId(), "Out for Delivery")), Palette.MAROON.color());
+
+            stats.addCard("Failed Orders", String.format("%,d", CustomerDao.getCustomerDeliveryCount(customer.getCustomerId(), "Failed")), Palette.YELLOW.color());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         transactionList = new TransactionList(customer);
 
         add(customerInfo, "growx");
-        add(new CustomerStats(customer), "height 85%, grow");
+        add(stats, "height 85%, grow");
         add(transactionList, "height 100%, grow");
     }
 }

@@ -17,11 +17,11 @@ public class Iconify extends FlatSVGIcon {
 
     public Iconify(String iconName, Color color) {
         super(String.format(iconPath, iconName));
-        setColorFilter(new FlatSVGIcon.ColorFilter(_ -> color));
+        setColorFilter(new FlatSVGIcon.ColorFilter(e -> color));
     }
     
     public Iconify setColor(Color color) {
-        setColorFilter(new FlatSVGIcon.ColorFilter(_ -> color));
+        setColorFilter(new FlatSVGIcon.ColorFilter(e -> color));
         return this;
     }
 }

@@ -3,8 +3,7 @@ package app.software.suppliers.form;
 import java.sql.SQLException;
 
 import app.components.PopupDialog;
-import app.db.dao.customer.CustomerDao;
-
+import app.db.dao.production.SupplierDao;
 import app.db.pojo.production.Supplier;
 import app.software.suppliers.listing.SupplierEntry;
 import app.software.suppliers.listing.SupplierList;
@@ -19,7 +18,7 @@ public class SupplierDeleteConfirmation extends PopupDialog {
         setConfirmButtonAction(() -> {
             dispose();
             try {
-                CustomerDao.deleteCustomer(((Supplier) supplierEntry.getPojo()).getSupplierId());
+                SupplierDao.deleteSupplier(((Supplier) supplierEntry.getPojo()).getSupplierId());
 
                 PopupDialog notif = new PopupDialog("Supplier Deleted");
                 notif.setDialogType(DialogType.NOTIFICATION);

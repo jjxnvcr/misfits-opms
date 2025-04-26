@@ -108,7 +108,9 @@ public class SaleItemAddForm extends Form {
         add(measurementField, "wrap, grow, gapright 5%");
         add(details, "wrap, grow, span, gapleft 3%, gapright 3%, gapbottom 5%");
         add(createCancelButton(() -> {
+            ItemEntry entry = owner.getActiveItemEntry();
             owner.getActionPanel().getDefaultButton().doClick();
+            entry.doClick();
         }), "grow, gapbottom 5%, gapleft 5%");
         add(createConfirmButton("Add", () -> {
             PopupDialog confirm = new PopupDialog("Add Item Variant");
