@@ -22,6 +22,7 @@ An order processing/point-of-sale management system for a certain thrift shop
 - FlatLaf Extras 3.5.4
 - MigLayout Swing 11.4.2
 - Microsoft SQLServer JDBC 12.10.0
+- XChart 3.8.8
 
 > [!NOTE]
 > This project uses Maven for managing dependencies. To change versions of the dependencies, go to the pom.xml and replace the `<version></version>` of each dependency.
