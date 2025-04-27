@@ -23,13 +23,13 @@ import com.formdev.flatlaf.extras.components.FlatLabel;
 
 import app.components.Page;
 import app.components.ScrollList;
-import app.components.ScrollView;
 import app.db.dao.Dash;
 import app.db.dao.production.ItemDao;
 import app.db.pojo.column.DeliveryStatus;
 import app.db.pojo.column.Measurement;
 import app.db.pojo.sales.SaleItem;
 import app.software.App;
+import app.software.cashier.view.CartScrollView;
 import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
@@ -244,7 +244,7 @@ public class GlancePage extends Page {
         quantityLabel.setText("Sold");
         quantityLabel.setForeground(Palette.SURFACE2.color());
 
-        ScrollView view = new ScrollView(1);
+        CartScrollView view = new CartScrollView();
 
         for (SaleItem item : items) {
             Page itemPage = new Page(new MigLayout("insets 0, fillx", "[90%][10%]"), false);
