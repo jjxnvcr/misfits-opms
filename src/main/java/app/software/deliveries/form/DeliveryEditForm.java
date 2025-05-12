@@ -92,6 +92,9 @@ public class DeliveryEditForm extends Form {
                     if (amount < SalesTransactionDao.getTransactionTotal(delivery.getTransactionId())) {
                         setFeedback("Amount is less than the amount to be paid!");
                         return;
+                    } else if (amount > SalesTransactionDao.getTransactionTotal(delivery.getTransactionId())) {
+                        setFeedback("Amount is greater than the amount to be paid!");
+                        return;
                     }
                 } catch (Exception e) {
                     setFeedback("An error occurred. Please try again.");
