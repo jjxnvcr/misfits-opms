@@ -235,6 +235,8 @@ AS
     ON ti.TransactionID = st.TransactionID
     WHERE YEAR(st.TransactionDate) = YEAR(@TransactionDate) AND MONTH(st.TransactionDate) = MONTH(@TransactionDate)
     GROUP BY si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize
+    ORDER BY TotalQuantity DESC
+    
 GO
 
 CREATE TRIGGER Sales.TR_OnTransactionCreate
