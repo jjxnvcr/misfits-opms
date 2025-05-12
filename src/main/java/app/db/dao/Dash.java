@@ -248,4 +248,24 @@ public class Dash {
 
         return 0;
     }
+
+    public static List<Date> getReportDateRange() {
+        try (Connection conn = Connect.openConnection()) {
+            String sql = "SELECT DATEFROMPARTS(YEAR(TransactionDate), MONTH(TransactionDate), 1) AS Monthly FROM Sales.SalesTransaction GROUP BY YEAR(TransactionDate), MONTH(TransactionDate) ORDER BY Monthly";
+
+            ResultSet stmt = conn.createStatement().executeQuery(sql);
+
+            List<Date> reportDateRange = new ArrayList<>();
+
+            while (stmt.next()) {
+                reportDateRange.add(stmt.getDate("Monthly"));
+            }
+
+            return reportDateRange;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

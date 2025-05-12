@@ -1,13 +1,25 @@
 package app.software.glance;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JFileChooser;
 
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -19,10 +31,17 @@ import org.knowm.xchart.PieChart;
 import org.knowm.xchart.PieChartBuilder;
 import org.knowm.xchart.XChartPanel;
 
+import com.formdev.flatlaf.extras.components.FlatButton;
+import com.formdev.flatlaf.extras.components.FlatComboBox;
 import com.formdev.flatlaf.extras.components.FlatLabel;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import app.components.Page;
+import app.components.PopupDialog;
 import app.components.ScrollList;
+import app.db.Connect;
 import app.db.dao.Dash;
 import app.db.dao.production.ItemDao;
 import app.db.pojo.column.DeliveryStatus;
@@ -30,18 +49,55 @@ import app.db.pojo.column.Measurement;
 import app.db.pojo.sales.SaleItem;
 import app.software.App;
 import app.software.cashier.view.CartScrollView;
+import app.utils.ClientProperty;
+import app.utils.DialogType;
 import app.utils.Iconify;
 import app.utils.Palette;
 import net.miginfocom.swing.MigLayout;
 
 public class GlancePage extends Page {
+    private java.sql.Date reportDate;
+
     public GlancePage(App owner) {
         super(new MigLayout("insets 0, fillx", "[70%][30%]"), false);
+
+        Page reportPage = new Page(new MigLayout("insets 0, fillx", "[15%][85%]"), false);
+
+        FlatComboBox<String> reportDateComboBox = new FlatComboBox<>();
+        reportDateComboBox.setOpaque(false);
+        reportDateComboBox.setBackground(Palette.CRUST.color());
+        reportDateComboBox.setForeground(Palette.TEXT.color());
+        reportDateComboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        ClientProperty.setProperty(reportDateComboBox, "arc", "15");
+        ClientProperty.setProperty(reportDateComboBox, "popupBackground", Palette.CRUST.varString());
+        ClientProperty.setProperty(reportDateComboBox, "buttonBackground", null);
+        ClientProperty.setProperty(reportDateComboBox, "buttonStyle", "none");
+        ClientProperty.setProperty(reportDateComboBox, "arrowType", "triangle");
+        ClientProperty.setProperty(reportDateComboBox, "maximumRowCount", "3");
+        ClientProperty.setProperty(reportDateComboBox, "padding", "10, 5, 10, 5");
+
+        Dash.getReportDateRange().forEach(d -> reportDateComboBox.addItem("" + d));
+
+        reportDateComboBox.addActionListener(e -> reportDate = java.sql.Date.valueOf(reportDateComboBox.getSelectedItem().toString()));
+        reportDateComboBox.setSelectedIndex(reportDateComboBox.getItemCount() - 1);
+
+        FlatButton reportButton = new FlatButton();
+        reportButton.setText("Generate Sales Report (XLSX)");
+        reportButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        ClientProperty.setProperty(reportButton, "arc", "10");
+        reportButton.setBackground(Palette.CRUST.color());
+        reportButton.setForeground(Palette.TEXT.color());
+        reportButton.addActionListener(e -> generateSalesDateReport());
+
+        reportPage.add(reportButton, "growy");
+        reportPage.add(reportDateComboBox, "grow");
 
         Page page1 = new Page(new MigLayout("insets 0, fillx, wrap 5"), false);
         Page page2 = new Page(new MigLayout("insets 0, fillx", "[50%][50%]"), false);
 
         Map<java.sql.Date, Double> saleTrendData = Dash.getSaleTrendData();
+
+        page1.add(reportPage, "span, grow, wrap");
 
         page1.add(createChart(new ArrayList<>(saleTrendData.keySet()), new ArrayList<>(saleTrendData.values())), "span, grow, wrap");
 
@@ -206,7 +262,7 @@ public class GlancePage extends Page {
         chartStyle.setPlotBorderVisible(false);
         chartStyle.setLegendBackgroundColor(Palette.TRANSPARENT.color());
         chartStyle.setLegendBorderColor(Palette.TRANSPARENT.color());
-        chartStyle.setSeriesColors(new Color[] {Palette.PEACH.color(), Palette.MAUVE.color(), Palette.GREEN.color()});
+        chartStyle.setSeriesColors(new Color[] {Palette.BLUE.color(), Palette.MAUVE.color(), Palette.TEAL.color()});
         chartStyle.setPlotContentSize(1);
         chartStyle.setAntiAlias(true);
         chartStyle.setDefaultSeriesRenderStyle(PieSeriesRenderStyle.Donut);
@@ -277,4 +333,112 @@ public class GlancePage extends Page {
 
         return page;
     }
+
+public void generateSalesDateReport() {
+    Workbook workbook = new XSSFWorkbook();
+    String[] sheetNames = {
+        "Monthly Sales Trend",
+        "Monthly Sales Transaction",
+        "Monthly Most Sold Items"
+    };
+
+    try (Connection conn = Connect.openConnection()) {
+        String sql = "EXEC PROC_GetMonthlySaleTrend @TransactionDate=?";
+            
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setDate(1, reportDate);
+
+        ResultSet salesTrend = stmt.executeQuery();
+
+        sql = "EXEC PROC_GetMonthlySalesTransaction @TransactionDate=?";
+
+        stmt = conn.prepareStatement(sql);
+        stmt.setDate(1, reportDate);
+
+        ResultSet salesTransaction = stmt.executeQuery();
+
+        sql = "EXEC PROC_GetMonthlyTopSellingItems @TransactionDate=?";
+
+        stmt = conn.prepareStatement(sql);
+        stmt.setDate(1, reportDate);
+
+        ResultSet mostSoldItems = stmt.executeQuery();
+        List<ResultSet> resultSets = Arrays.asList(salesTrend, salesTransaction, mostSoldItems);
+
+        for (ResultSet rs: resultSets) {
+            try {
+                ResultSetMetaData meta = rs.getMetaData();
+                int colCount = meta.getColumnCount();
+                if (colCount == 0) continue;
+
+                Sheet sheet = workbook.createSheet(sheetNames[resultSets.indexOf(rs)]);
+                Row header = sheet.createRow(0);
+
+                for (int j = 1; j <= colCount; j++) {
+                    header.createCell(j - 1).setCellValue(meta.getColumnLabel(j));
+                }
+
+                int rowIndex = 1;
+
+                while (rs.next()) {
+                    Row row = sheet.createRow(rowIndex++);
+                    for (int j = 1; j <= colCount; j++) {
+                        Cell cell = row.createCell(j - 1);
+
+                        switch (meta.getColumnType(j)) {
+                            case Types.INTEGER:
+                                cell.setCellValue(rs.getInt(j));
+                                break;
+                            case Types.DOUBLE:
+                            case Types.DECIMAL:
+                            case Types.NUMERIC:
+                                cell.setCellValue(rs.getDouble(j));
+                                break;
+                            case Types.DATE:
+                            case Types.TIMESTAMP:
+                                Date date = rs.getDate(j);
+                                cell.setCellValue(date != null ? date.toString() : "");
+                                break;
+                            default:
+                                String val = rs.getString(j);
+                                cell.setCellValue(val != null ? val : "");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    try {
+        JFileChooser directoryChooser = new JFileChooser();
+        directoryChooser.setDialogTitle("Select Directory");
+        directoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        directoryChooser.setAcceptAllFileFilterUsed(false);
+
+        if (directoryChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File directory = directoryChooser.getSelectedFile();
+            try (FileOutputStream fileOutput = new FileOutputStream(directory.getPath() + "/report_" + new SimpleDateFormat("yyyy-MM").format(reportDate) + ".xlsx")) {
+                workbook.write(fileOutput);
+            }
+            workbook.close();
+
+            PopupDialog notif = new PopupDialog("Sales Report Generated");
+            notif.setDialogType(DialogType.NOTIFICATION);
+            notif.setMessage("Report has been successfully exported!");
+            notif.setCloseButtonAction(() -> notif.dispose());
+            notif.display();
+        }
+    } catch (Exception e) {
+        PopupDialog error = new PopupDialog("Unable to Export Report");
+        error.setDialogType(DialogType.ERROR);
+        error.setMessage("Unable to export report\n\n" + e.getMessage());
+        error.setCloseButtonAction(() -> error.dispose());
+        error.display();
+    }
+}
+
 }
