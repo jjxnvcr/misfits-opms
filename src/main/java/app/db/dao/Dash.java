@@ -194,7 +194,7 @@ public class Dash {
 
     public static Map<Date, Double> getSaleTrendData() {
         try (Connection conn = Connect.openConnection()) {
-            String sql = "SELECT * FROM VW_SaleTrend ORDER BY TransactionDate";
+            String sql = "SELECT * FROM VW_SaleTrend";
 
             ResultSet stmt = conn.createStatement().executeQuery(sql);
 

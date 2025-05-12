@@ -176,7 +176,7 @@ public class GlancePage extends Page {
         chart.addSeries("Sales", date, sales);
 
         XChartPanel<XYChart> chartPanel = new XChartPanel<>(chart);
-        chartPanel.setBackground(Palette.TRANSPARENT.color());
+        chartPanel.setOpaque(false);
 
         page.add(label, "align 50%, wrap");
         page.add(chartPanel, "grow");

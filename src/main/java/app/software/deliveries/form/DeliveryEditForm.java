@@ -23,6 +23,8 @@ import net.miginfocom.swing.MigLayout;
 public class DeliveryEditForm extends Form {
     private FlatComboBox<String> statusField;
     private FlatSpinner paidAmountField;
+    private int selectedStatusIndex;
+
     public DeliveryEditForm(DeliveryList owner) {
         super();
         
@@ -45,6 +47,20 @@ public class DeliveryEditForm extends Form {
         }
 
         statusField.setSelectedItem(delivery.getDeliveryStatus());
+
+        selectedStatusIndex = statusField.getSelectedIndex();
+
+        statusField.addActionListener(e -> {
+            if (statusField.getSelectedIndex() - selectedStatusIndex > 1 && statusField.getSelectedIndex() != statusField.getItemCount() - 1) {
+                statusField.setSelectedIndex(selectedStatusIndex);
+                PopupDialog error = new PopupDialog("Invalid Delivery Flow");
+                error.setDialogType(DialogType.ERROR);
+                error.setMessage("Mark the delivery as '" + statusField.getItemAt( selectedStatusIndex + 1).toString() + "' first.");
+                error.setCloseButtonAction(() -> error.dispose());
+                error.display();
+                return;
+            }
+        });
 
         add(getHeader(), "span, grow, gapbottom 5%, gapleft 5%");
 
@@ -87,7 +103,6 @@ public class DeliveryEditForm extends Form {
             confirm.setMessage("Are you sure you want to edit this delivery?");
             confirm.setCloseButtonAction(() -> confirm.dispose());
             confirm.setConfirmButtonAction(() -> {
-
                 try {
                     delivery.setDeliveryStatus(statusField.getSelectedIndex() == 0 ? statusField.getPlaceholderText() : statusField.getSelectedItem().toString());
 
