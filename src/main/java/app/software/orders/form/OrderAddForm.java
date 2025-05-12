@@ -97,7 +97,7 @@ public class OrderAddForm extends Form {
 
                     owner.setActiveOrderEntry(orderEntry);
                     owner.loadSupplyOrders();
-
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Add Supply Order");
                     error.setDialogType(DialogType.ERROR);

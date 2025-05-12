@@ -63,6 +63,7 @@ public class CategoryAddForm extends Form {
 
                     owner.setActiveCategoryEntry(categoryEntry);
                     owner.loadCategory();
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Add Category");
                     error.setDialogType(DialogType.ERROR);

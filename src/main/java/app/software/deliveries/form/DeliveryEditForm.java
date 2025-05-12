@@ -124,7 +124,7 @@ public class DeliveryEditForm extends Form {
                     notif.display();
 
                     owner.loadDeliveries();
-
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Edit Delivery");
                     error.setDialogType(DialogType.ERROR);

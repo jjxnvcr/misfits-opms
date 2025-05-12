@@ -150,7 +150,7 @@ public class ItemEditForm extends Form {
                     notif.display();
 
                     owner.loadInventory();
-
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Edit Item");
                     error.setDialogType(DialogType.ERROR);

@@ -188,8 +188,9 @@ public class CheckoutPayment extends Form {
                 PopupDialog notif = new PopupDialog("Transaction Complete");
                 notif.setDialogType(DialogType.NOTIFICATION);
                 notif.setMessage("Transaction has been completed!");
-                notif.setCloseButtonAction(() -> {notif.dispose(); owner.getOwner().revalidate(); owner.getOwner().repaint();});
+                notif.setCloseButtonAction(() -> notif.dispose());
                 notif.display();
+                owner.getOwner().getOwner().getOwner().removeActionView();
                 return;
             } catch (Exception e) {
                 e.printStackTrace();

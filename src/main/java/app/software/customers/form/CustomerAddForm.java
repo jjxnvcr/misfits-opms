@@ -120,6 +120,7 @@ public class CustomerAddForm extends Form {
                         
                         owner.setActiveCustomerEntry(customerEntry);
                         owner.loadCustomers();
+                        owner.getOwner().removeActionView();
                     } catch (SQLException e) {
                         PopupDialog error = new PopupDialog("Unable to Add Customer");
                         error.setDialogType(DialogType.ERROR);

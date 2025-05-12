@@ -78,6 +78,7 @@ public class SupplierEditForm extends Form {
                         notif.display();
 
                         owner.loadSupplier();
+                        owner.getOwner().removeActionView();
                     } catch (Exception e) {
                         PopupDialog error = new PopupDialog("Unable to Edit Supplier");
                         error.setDialogType(DialogType.ERROR);

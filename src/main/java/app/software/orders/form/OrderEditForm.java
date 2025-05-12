@@ -98,7 +98,7 @@ public class OrderEditForm extends Form {
                     notif.display();
 
                     owner.loadSupplyOrders();
-
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Edit Supply Order");
                     error.setDialogType(DialogType.ERROR);

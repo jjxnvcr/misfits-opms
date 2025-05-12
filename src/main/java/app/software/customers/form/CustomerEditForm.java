@@ -122,6 +122,7 @@ public class CustomerEditForm extends Form {
                         notif.display();
 
                         owner.loadCustomers();
+                        owner.getOwner().removeActionView();
                     } catch (SQLException e) {
                         PopupDialog error = new PopupDialog("Unable to Edit Customer");
                         error.setDialogType(DialogType.ERROR);

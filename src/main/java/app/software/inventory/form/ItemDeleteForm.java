@@ -122,12 +122,13 @@ public class ItemDeleteForm extends Form {
                     notif.setMessage("Item has been successfully deleted!");
                     notif.setCloseButtonAction(() -> {
                         notif.dispose();
-                        owner.getOwner().removeActionView();
-                        owner.resetActiveItemEntry();
-                        owner.getActionPanel().getDefaultButton().doClick();
-                        owner.loadInventory();
                     });
                     notif.display();
+
+                    owner.resetActiveItemEntry();
+                    owner.getActionPanel().getDefaultButton().doClick();
+                    owner.loadInventory();
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Delete Item");
                     error.setDialogType(DialogType.ERROR);

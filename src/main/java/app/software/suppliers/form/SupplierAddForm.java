@@ -81,6 +81,7 @@ public class SupplierAddForm extends Form {
 
                         owner.setActiveSupplierEntry(supplierEntry);
                         owner.loadSupplier();
+                        owner.getOwner().removeActionView();
                     } catch (SQLException e) {
                         PopupDialog error = new PopupDialog("Unable to Add Supplier");
                         error.setDialogType(DialogType.ERROR);

@@ -112,6 +112,7 @@ public class ItemAddForm extends Form {
 
                     owner.setActiveItemEntry(itemEntry);
                     owner.loadInventory();
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Add Item");
                     error.setDialogType(DialogType.ERROR);

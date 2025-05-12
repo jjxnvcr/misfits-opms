@@ -60,6 +60,7 @@ public class CategoryEditForm extends Form {
                     notif.display();
 
                     owner.loadCategory();
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Edit Category");
                     error.setDialogType(DialogType.ERROR);

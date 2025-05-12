@@ -57,6 +57,7 @@ public class SaleEditForm extends Form {
                     notif.display();
 
                     owner.loadSaleTransactions();
+                    owner.getOwner().removeActionView();
                 } catch (SQLException e) {
                     PopupDialog error = new PopupDialog("Unable to Edit Sales Transaction");
                     error.setDialogType(DialogType.ERROR);
