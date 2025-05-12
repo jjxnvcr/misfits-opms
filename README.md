@@ -34,6 +34,8 @@ This system allows for the following:
 - MigLayout Swing 11.4.2
 - Microsoft SQLServer JDBC 12.10.0
 - XChart 3.8.8
+- Apache POI 5.4.1
+- Apache POI OOXML 5.4.1
 
 > [!NOTE]
 > This project uses Maven for managing dependencies. To change versions of the dependencies, go to the pom.xml and replace the `<version></version>` of each dependency.
