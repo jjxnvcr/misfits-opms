@@ -34,7 +34,6 @@ import org.knowm.xchart.XChartPanel;
 import com.formdev.flatlaf.extras.components.FlatButton;
 import com.formdev.flatlaf.extras.components.FlatComboBox;
 import com.formdev.flatlaf.extras.components.FlatLabel;
-
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -372,9 +371,11 @@ public void generateSalesDateReport() {
                 if (colCount == 0) continue;
 
                 Sheet sheet = workbook.createSheet(sheetNames[resultSets.indexOf(rs)]);
+
                 Row header = sheet.createRow(0);
 
                 for (int j = 1; j <= colCount; j++) {
+                    sheet.autoSizeColumn(j - 1);
                     header.createCell(j - 1).setCellValue(meta.getColumnLabel(j));
                 }
 
@@ -383,7 +384,11 @@ public void generateSalesDateReport() {
                 while (rs.next()) {
                     Row row = sheet.createRow(rowIndex++);
                     for (int j = 1; j <= colCount; j++) {
+                        CellStyle style = workbook.createCellStyle();
+                        style.setAlignment(HorizontalAlignment.LEFT);
+
                         Cell cell = row.createCell(j - 1);
+                        cell.setCellStyle(style);
 
                         switch (meta.getColumnType(j)) {
                             case Types.INTEGER:
