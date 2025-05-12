@@ -34,7 +34,7 @@ public class CartItem extends Page {
         sizeFormat.setMinimumFractionDigits(0);
         sizeFormat.setMaximumFractionDigits(1);
 
-        LabelWrap name = new LabelWrap(item.getItemName() + " (" + (item.getMeasurementSystem() == null ? "One Size" : item.getMeasurementSystem().equals(Measurement.Alpha.name()) ? item.getAlphaSize() : sizeFormat.format(item.getNumericSize())) + ")", getFont());
+        LabelWrap name = new LabelWrap(item.getItemName() + " (" + (item.getMeasurementSystem() == null ? "One Size" : item.getMeasurementSystem().equals(Measurement.Alpha.name()) ? item.getAlphaSize() : item.getMeasurementSystem() + " " + sizeFormat.format(item.getNumericSize())) + ")", getFont());
 
         FlatLabel quantityLabel = new FlatLabel();
         quantityLabel.setForeground(Palette.TEXT.color());

@@ -38,7 +38,7 @@ public class SaleItemEntry extends ListEntry {
 
         FlatLabel size = new FlatLabel();
         size.setForeground(Palette.SUBTEXT1.color());
-        size.setText("(" + (saleItem.getMeasurementSystem() == null ? "One Size" : saleItem.getMeasurementSystem().equals(Measurement.Alpha.name()) ? saleItem.getAlphaSize() : sizeFormat.format(saleItem.getNumericSize())) + ")");
+        size.setText("(" + (saleItem.getMeasurementSystem() == null ? "One Size" : saleItem.getMeasurementSystem().equals(Measurement.Alpha.name()) ? saleItem.getAlphaSize() : saleItem.getMeasurementSystem() + " " + sizeFormat.format(saleItem.getNumericSize())) + ")");
         size.setIcon(new Iconify("ruler", Palette.SURFACE0.color()).derive(size.getFont().getSize() + 4, size.getFont().getSize() + 4));
         size.setIconTextGap(5);
 
