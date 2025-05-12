@@ -312,7 +312,7 @@ public class GlancePage extends Page {
                 sizeFormat.setMinimumFractionDigits(0);
                 sizeFormat.setMaximumFractionDigits(1);
 
-                name.setText(name.getText() + ItemDao.getItemById(item.getItemId()).getItemName() + " (" + (item.getMeasurementSystem() == null ? "One Size" : item.getMeasurementSystem().equals(Measurement.Alpha.name()) ? item.getAlphaSize() : sizeFormat.format(item.getNumericSize())) + ")");
+                name.setText(name.getText() + ItemDao.getItemById(item.getItemId()).getItemName() + " (" + (item.getMeasurementSystem() == null ? "One Size" : item.getMeasurementSystem().equals(Measurement.Alpha.name()) ? item.getAlphaSize() : item.getMeasurementSystem() + " " + sizeFormat.format(item.getNumericSize())) + ")");
             } catch (SQLException e) {
                 name.setText("Unknown");
             }
