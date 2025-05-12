@@ -6,8 +6,9 @@ AS
     ON ti.SaleItemID = si.SaleItemID
     INNER JOIN Sales.SalesTransaction st
     ON ti.TransactionID = st.TransactionID
-    WHERE DATEPART(DAY, st.TransactionDate) = DATEPART(DAY, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
-
+    INNER JOIN Sales.Delivery d
+    ON st.TransactionID = d.TransactionID
+    WHERE CAST(st.TransactionDate AS DATE) = CAST(GETDATE() AS DATE) AND d.DeliveryStatus = 'Delivered'
 GO
 
 CREATE VIEW VW_WeeklyRevenue
@@ -18,8 +19,9 @@ AS
     ON ti.SaleItemID = si.SaleItemID
     INNER JOIN Sales.SalesTransaction st
     ON ti.TransactionID = st.TransactionID
-    WHERE DATEPART(WEEK, st.TransactionDate) = DATEPART(WEEK, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
-
+    INNER JOIN Sales.Delivery d
+    ON st.TransactionID = d.TransactionID
+    WHERE CAST(st.TransactionDate AS DATE) >= DATEADD(DAY, 1 - DATEPART(WEEKDAY, GETDATE()), CAST(GETDATE() AS DATE)) AND CAST(st.TransactionDate AS DATE) < DATEADD(DAY, 8 - DATEPART(WEEKDAY, GETDATE()), CAST(GETDATE() AS DATE)) AND d.DeliveryStatus = 'Delivered'
 GO
 
 CREATE VIEW VW_MonthlyRevenue
@@ -30,7 +32,7 @@ AS
     ON ti.SaleItemID = si.SaleItemID
     INNER JOIN Sales.SalesTransaction st
     ON ti.TransactionID = st.TransactionID
-    WHERE DATEPART(MONTH, st.TransactionDate) = DATEPART(MONTH, GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+    WHERE YEAR(st.TransactionDate) = YEAR(GETDATE()) AND MONTH(st.TransactionDate) = MONTH(GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
 
 GO
 
@@ -62,6 +64,7 @@ AS
     INNER JOIN VW_SalesTransactionTotal stt
     ON st.TransactionID = stt.TransactionID
     GROUP BY st.TransactionDate
+    ORDER BY st.TransactionDate
 GO
 
 CREATE VIEW VW_AverageTransactionSpending
@@ -131,6 +134,7 @@ AS
     ON i.CategoryID = c.CategoryID
     JOIN Sales.SaleItem si
     ON i.ItemID = si.ItemID
+    WHERE c.CategoryName IN ('Shoes', 'Pants', 'Skirt', 'Shorts', 'Jeans')
 
 GO
 
