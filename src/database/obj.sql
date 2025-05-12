@@ -32,7 +32,9 @@ AS
     ON ti.SaleItemID = si.SaleItemID
     INNER JOIN Sales.SalesTransaction st
     ON ti.TransactionID = st.TransactionID
-    WHERE YEAR(st.TransactionDate) = YEAR(GETDATE()) AND MONTH(st.TransactionDate) = MONTH(GETDATE()) AND st.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
+    INNER JOIN Sales.Delivery d
+    ON st.TransactionID = d.TransactionID
+    WHERE YEAR(st.TransactionDate) = YEAR(GETDATE()) AND MONTH(st.TransactionDate) = MONTH(GETDATE()) AND d.DeliveryStatus = 'Delivered'
 
 GO
 
@@ -42,7 +44,6 @@ AS
     FROM Sales.SaleItem si
     INNER JOIN Sales.TransactionItem ti
     ON si.SaleItemID = ti.SaleItemID
-    WHERE ti.TransactionID IN (SELECT TransactionID FROM Sales.Delivery WHERE DeliveryStatus = 'Delivered')
     GROUP BY si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize
 
 GO
@@ -134,7 +135,6 @@ AS
     ON i.CategoryID = c.CategoryID
     JOIN Sales.SaleItem si
     ON i.ItemID = si.ItemID
-    WHERE c.CategoryName IN ('Shoes', 'Pants', 'Skirt', 'Shorts', 'Jeans')
 
 GO
 
@@ -202,6 +202,39 @@ AS
     FROM Production.SupplyOrder
     WHERE SupplierID = @SupplierID AND OrderStatus = @OrderStatus
 
+GO
+
+CREATE PROCEDURE PROC_GetMonthlySalesTransaction
+    @TransactionDate datetime
+AS
+    SELECT st.*, SUM(stt.TotalAmount) AS TotalRevenue
+    FROM Sales.SalesTransaction st
+    INNER JOIN VW_SalesTransactionTotal stt
+    ON st.TransactionID = stt.TransactionID
+    WHERE YEAR(st.TransactionDate) = YEAR(@TransactionDate) AND MONTH(st.TransactionDate) = MONTH(@TransactionDate)
+    GROUP BY st.TransactionID, st.CustomerID, st.TransactionDate, st.PaymentType, st.EWalletType, st.BankName, st.MobileNumber, st.AccountNumber, st.AccountName, st.ReferenceNumber
+
+GO
+
+CREATE PROCEDURE PROC_GetMonthlySaleTrend
+    @TransactionDate datetime
+AS
+    SELECT * FROM VW_SaleTrend
+    WHERE YEAR(TransactionDate) = YEAR(@TransactionDate) AND MONTH(TransactionDate) = MONTH(@TransactionDate)
+
+GO
+
+CREATE PROCEDURE PROC_GetMonthlyTopSellingItems
+    @TransactionDate datetime
+AS
+    SELECT si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize, SUM(ti.Quantity) AS TotalQuantity
+    FROM Sales.SaleItem si
+    INNER JOIN Sales.TransactionItem ti
+    ON si.SaleItemID = ti.SaleItemID
+    INNER JOIN Sales.SalesTransaction st
+    ON ti.TransactionID = st.TransactionID
+    WHERE YEAR(st.TransactionDate) = YEAR(@TransactionDate) AND MONTH(st.TransactionDate) = MONTH(@TransactionDate)
+    GROUP BY si.SaleItemID, si.ItemID, si.ItemPrice, si.MeasurementSystem, si.NumericSize, si.AlphaSize
 GO
 
 CREATE TRIGGER Sales.TR_OnTransactionCreate
