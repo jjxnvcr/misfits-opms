@@ -125,7 +125,7 @@ public class SalesTransactionDao {
 
         List<SalesTransaction> sales = new ArrayList<>();
 
-        String sql = "SELECT * FROM Sales.SalesTransaction ORDER BY TransactionID DESC";
+        String sql = "SELECT * FROM Sales.SalesTransaction";
         ResultSet res = conn.createStatement().executeQuery(sql);
 
         while (res.next()) {
