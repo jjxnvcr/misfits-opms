@@ -21,6 +21,7 @@ import app.db.pojo.column.DeliveryStatus;
 import app.db.pojo.sales.SalesTransaction;
 import app.software.sales.SalesPage;
 import app.software.sales.form.SaleDeleteConfirmation;
+import app.software.sales.form.SaleEditForm;
 import app.utils.DialogType;
 import app.utils.Sort;
 import net.miginfocom.swing.MigLayout;
@@ -90,7 +91,7 @@ public class SalesList extends Page {
                         confirm.setConfirmButtonAction(() -> {
                             confirm.dispose();
                             owner.removeActionView();
-                            //owner.loadActionView(new SaleEditForm(this));
+                            owner.loadActionView(new SaleEditForm(this));
                         });
                         confirm.display();
                         } 

@@ -11,6 +11,7 @@ import app.db.dao.sales.DeliveryDao;
 import app.db.pojo.column.DeliveryStatus;
 import app.db.pojo.sales.SalesTransaction;
 import app.software.sales.form.SaleDeleteConfirmation;
+import app.software.sales.form.SaleEditForm;
 import app.software.sales.view.SaleView;
 import app.utils.ClientProperty;
 import app.utils.DialogType;
@@ -46,7 +47,7 @@ public class SaleEntry extends ListEntry {
             } else if (activeButton == owner.getActionPanel().getEditButton()) {
                 try {
                     if (DeliveryDao.getDeliveryByTransactionId(((SalesTransaction) owner.getActiveSaleEntry().getPojo()).getTransactionId()).getDeliveryStatus().equals(DeliveryStatus.Pending.name())) {
-
+                        owner.getOwner().loadActionView(new SaleEditForm(owner));
                     } else {
                         PopupDialog error = new PopupDialog("Unable to Edit Sale Transaction");
                         error.setDialogType(DialogType.ERROR);

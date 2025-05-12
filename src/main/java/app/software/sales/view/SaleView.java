@@ -56,7 +56,7 @@ public class SaleView extends Page {
         }
 
         FlatLabel date = new FlatLabel();
-        date.setText(new SimpleDateFormat("MM, dd YYYY").format(new Date(sale.getTransactionDate().getTime())));
+        date.setText(new SimpleDateFormat("MMM dd, YYYY").format(new Date(sale.getTransactionDate().getTime())));
         date.setForeground(Palette.SUBTEXT1.color());
         date.setIcon(new Iconify("calendar", Palette.SURFACE2.color()).derive(date.getFont().getSize() + 4, customer.getFont().getSize() + 4));
         date.setIconTextGap(5);
